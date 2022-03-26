@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="text-center mt-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} text-center border-0 bg-transparent" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <h1 class="text-center mb-3">Register</h1>
+    </div>
+
+    <form action="{{ url_for('auth_bp.register') }}" method="post" novalidate>
+
+        {{ form.csrf_token }}
+
+        <div class="row">
+            <div class="col-5"></div>
+            <div class="col-2">
+                {{ form.user_id(placeholder='UserID', autofocus=True, class_="form-control my-2") }}
+            </div>
+            <div class="col-4">
+                {% for err in form.user_id.errors: %}
+                <div class="alert alert-danger text-start p-0 my-3 border-0 bg-transparent" role="alert">
+                    {{ err }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-5"></div>
+            <div class="col-2">
+                {{ form.name(placeholder='Name', class_="form-control my-2") }}
+            </div>
+            <div class="col-4">
+                {% for err in form.name.errors: %}
+                <div class="alert alert-danger text-start p-0 my-3 border-0 bg-transparent" role="alert">
+                    {{ err }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-5"></div>
+            <div class="col-2">
+                {{ form.officer_code(placeholder='Officer Code', class_="form-control my-2") }}
+            </div>
+            <div class="col-4">
+                {% for err in form.officer_code.errors: %}
+                <div class="alert alert-danger text-start p-0 my-3 border-0 bg-transparent" role="alert">
+                    {{ err }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-5"></div>
+            <div class="col-2">
+                {{ form.access_type(class='form_queryselect', class_="form-select my-2") }}
+            </div>
+            <div class="col-4">
+                {% for err in form.access_type.errors: %}
+                <div class="alert alert-danger text-start p-0 my-3 border-0 bg-transparent" role="alert">
+                    {{ err }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-5"></div>
+            <div class="col-2">
+                {{ form.password(placeholder='Password', class_="form-control my-2") }}
+            </div>
+            <div class="col-4">
+                {% for err in form.password.errors: %}
+                <div class="alert alert-danger text-start p-0 my-3 border-0 bg-transparent" role="alert">
+                    {{ err }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-5"></div>
+            <div class="col-2 text-center">
+                {{ form.confirm_password(placeholder='Confirm Password', class_="form-control my-2") }}
+
+                {{ form.submit(class_="btn btn-success mt-3 text") }}
+            </div>
+            <div class="col-4">
+                {% for err in form.confirm_password.errors: %}
+                <div class="alert alert-danger text-start p-0 my-3 border-0 bg-transparent" role="alert">
+                    {{ err }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

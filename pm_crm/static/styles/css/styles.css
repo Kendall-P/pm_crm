@@ -1,0 +1,33 @@
+body {
+    background-color: #f7f5f2;
+}
+
+a {
+    text-align: center;
+}
+
+
+/* Navbar */
+
+.color-navbar {
+    background-color: #115740;
+}
+
+.logo-navbar {
+    max-width: 35%;
+    height: auto;
+}
+
+/* Index/Login/Register */
+
+.form_queryselect {
+    background-color: white;
+    border-style: inset;
+    border-width: 2px;
+    color: -internal-light-dark(black, white);
+    cursor: text;
+    line-height: 24px;
+    padding: 1px 2px;
+    width: 227.2px;
+    height: 30px;
+}

@@ -1,4 +1,4 @@
-from os import environ, path
+from os import environ, path, urandom
 from dotenv import load_dotenv
 
 
@@ -6,9 +6,13 @@ basedir = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(basedir, ".env"))
 
 
+SECRET_KEY = urandom(32)
+
+
 class Config:
     """Base Config"""
 
+    SECRET_KEY = SECRET_KEY
     STATIC_FOLDER = "static"
     TEMPLATES_FOLDER = "templates"
 
