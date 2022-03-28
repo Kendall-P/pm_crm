@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-6 mt-5">
+        <row>
+            <h1 class="">{{ rel.name }} - {{ rel.market_value | currencyFormat}}</h1>
+        </row>
+        <row class="row ms-5 mt-5 flex-grow-1" style="min-height: 0">
+            <div class="col-10 h-100 d-flex flex-column">
+                <div class="border border-3" style="overflow-y: scroll;">
+                    <ul class="list-group">
+                        {% if rel.accounts %}
+                        {% for account in rel.accounts %}
+                        {% if account.sma %}
+                        <li class="list-group-item py-0">
+                            <button class="btn btn-success-outline btn-sm px-1 py-0" role="button"
+                                data-bs-toggle="collapse" data-bs-target="#Arr{{ account.accountnumber }}"
+                                aria-expanded="false" aria-controls="Arr{{ account.accountnumber }}"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-plus-square" viewBox="0 0 16 16">
+                                    <path
+                                        d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                                    <path
+                                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                                </svg></button>
+                            {{ account.accountnumber }} - {{ account.account_name }} - {{ account.market_value |
+                            currencyFormat }}
+                        </li>
+                        {% else %}
+                        <li class="list-group-item py-0 ps-5">
+                            {{ account.accountnumber }} - {{ account.account_name }} - {{ account.market_value |
+                            currencyFormat }}
+                        </li>
+                        {% endif %}
+                        {% if account.sma %}
+                        <div class="collapse" id="Arr{{ account.accountnumber }}">
+                            <li class="list-group-item list-group-item-secondary ps-5 py-0">
+                                {{ account.account_name }} - {{ account.market_value |
+                                currencyFormat }}
+                            </li>
+                            {% for n in range(account.sma | length) %}
+                            <li class="list-group-item list-group-item-secondary ps-5 py-0">
+                                {{ account.sma[n].account_name }} - {{
+                                account.sma[n].market_value | currencyFormat}}
+                            </li>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <li class="list-group-item bg-black py-2"></li>
+                        {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </row>
+
+    </div>
+    <div class="col-5 mt-3 g-0 text-center">
+        <form action="" method="POST" enctype="multipart/form-data" novalidate>
+
+            <div class="row align-items-center justify-content-center">
+                <div class="col">
+                    <label for="meeting_yr" class="col-form-label">Meetings Per Year</label>
+                </div>
+                <div class="col">
+                    <label for="meeting_month" class="col-form-label">First Meeting Month</label>
+                </div>
+                <div class="col">
+                    <label for="call_yr" class="col-form-label">Calls Per Year</label>
+                </div>
+                <div class="col">
+                    <label for="call_month" class="col-form-label">First Call Month</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <select name="meeting_year" class="form-select form-select-sm">
+                        <option selected>{{ meeting_sla.per_year }}</option>
+                        {% for n in [0, 1, 2, 3, 4, 6, 12] %}
+                        {% if n != meeting_sla.per_year %}
+                        <option value="{{ n }}">{{ n }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col">
+                    {% if meeting_sla.per_year == 0 %}
+                    <select name="meeting_month" class="form-select form-select-sm" disabled></select>
+                    {% else %}
+                    <select name="meeting_month" class="form-select form-select-sm">
+                        <option selected>{{ months[meeting_sla.month - 1].month_name }}</option>
+
+                        {% if meeting_sla.per_year == 12 %}
+                        {% for month in months[12:] %}
+                        {% if month.id != meeting_sla.month %}
+                        <option value="{{ month.id}} ">{{ month.month_name }}</option>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% else %}
+                        {% for month in months %}
+                        {% if month.id != meeting_sla.month %}
+                        <option value="{{ month.id }}">{{ month.month_name }}</option>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </select>
+                    {% endif %}
+                </div>
+                <div class="col">
+                    <select name="call_year" class="form-select form-select-sm">
+                        <option selected>{{ call_sla.per_year }}</option>
+                        {% for n in [0, 1, 2, 3, 4, 6, 12] %}
+                        {% if n != call_sla.per_year %}
+                        <option value="{{ n }}">{{ n }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col">
+                    {% if call_sla.per_year == 0 %}
+                    <select name="call_month" class="form-select form-select-sm" disabled></select>
+                    {% else %}
+                    <select name="call_month" class="form-select form-select-sm">
+                        <option selected>{{ months[call_sla.month - 1].month_name }}</option>
+                        {% for month in months %}
+                        {% if month.id != call_sla.month %}
+                        <option value="{{ month.id }}">{{ month.month_name }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col text-center">
+
+                    <button type="submit" name="action" value="update_sla"
+                        class="btn btn-sm btn-secondary text">Update</button>
+
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 basedir = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(basedir, ".env"))
 
+UPLOAD_FOLDER = path.join(basedir, "pm_crm/static/uploads")
+ALLOWED_EXTENSIONS = {"xls"}
+MAX_CONTENT_LENGTH = 1 * 1024 * 1024 / 10
 
 SECRET_KEY = urandom(32)
 
@@ -15,6 +18,9 @@ class Config:
     SECRET_KEY = SECRET_KEY
     STATIC_FOLDER = "static"
     TEMPLATES_FOLDER = "templates"
+    UPLOADED_DATAFILES_DEST = UPLOAD_FOLDER
+    ALLOWED_EXTENSIONS = ALLOWED_EXTENSIONS
+    MAX_CONTENT_LENGTH = MAX_CONTENT_LENGTH
 
     # Database
     SQLALCHEMY_ECHO = False

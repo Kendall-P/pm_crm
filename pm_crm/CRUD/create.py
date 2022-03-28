@@ -1,6 +1,15 @@
 from flask import flash
 from flask_login import current_user
-from pm_crm.models import db, User, TAOfficer, UpdateAccount, LMAAccount, Relationship
+from pm_crm.models import (
+    db,
+    User,
+    TAOfficer,
+    UpdateAccount,
+    LMAAccount,
+    Relationship,
+    SLAMeeting,
+    SLACall,
+)
 
 
 def new_user(form):
@@ -21,3 +30,47 @@ def new_user(form):
     except:
         flash("User not added to DB.  Something went wrong.", "danger")
         return "auth_bp.register"
+
+
+def new_ta(ta):
+    new_ta = TAOfficer(code=ta)
+    db.session.add(new_ta)
+
+
+def new_update_account_entry(user_id, file_date):
+    new_account_update = UpdateAccount(user_id=user_id, update_date=file_date)
+    db.session.add(new_account_update)
+    db.session.commit()
+
+
+def new_lma_from_sma(sma):
+    new_lma = LMAAccount(
+        accountnumber=sma.accountnumber,
+        account_name=sma.account_name,
+        trust_advisor=sma.trust_advisor,
+        portfolio_manager=sma.portfolio_manager,
+        market_value=sma.market_value,
+        invest_resp=sma.invest_resp,
+        update_id=sma.update_id,
+    )
+    db.session.add(new_lma)
+
+
+def new_relationship(name):
+    new_rel = Relationship(name=name.title(), portfolio_manager=current_user.id)
+    db.session.add(new_rel)
+    db.session.commit()
+
+
+def new_meeting_sla(year, month):
+    new_m_sla = SLAMeeting(per_year=year, month=month)
+    db.session.add(new_m_sla)
+    db.session.commit()
+    return new_m_sla
+
+
+def new_call_sla(year, month):
+    new_c_sla = SLACall(per_year=year, month=month)
+    db.session.add(new_c_sla)
+    db.session.commit()
+    return new_c_sla

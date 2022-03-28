@@ -62,23 +62,23 @@ class NewRelationshipForm(FlaskForm):
     submit = SubmitField("Create")
 
 
-class UpdateRelationshipSLA(FlaskForm):
-    meetings_per_year = IntegerField(
-        "Meetings Per Year", validators=[DataRequired(), NumberRange(min=0, max=12)]
-    )
-    first_meeting_month = QuerySelectField(
-        "First Meeting Month",
-        validators=[DataRequired()],
-        query_factory=month_choices,
-        get_label=("month_name"),
-    )
-    calls_per_year = IntegerField(
-        "Calls Per Year", validators=[DataRequired(), NumberRange(min=0, max=12)]
-    )
-    first_call_month = QuerySelectField(
-        "First Call Month",
-        validators=[DataRequired()],
-        query_factory=month_choices,
-        get_label=("month_name"),
-    )
-    submit = SubmitField("Update")
+# class UpdateRelationshipSLA(FlaskForm):
+#     meetings_per_year = IntegerField(
+#         "Meetings Per Year", validators=[DataRequired(), NumberRange(min=0, max=12)]
+#     )
+#     first_meeting_month = QuerySelectField(
+#         "First Meeting Month",
+#         validators=[DataRequired()],
+#         query_factory=month_choices,
+#         get_label=("month_name"),
+#     )
+#     calls_per_year = IntegerField(
+#         "Calls Per Year", validators=[DataRequired(), NumberRange(min=0, max=12)]
+#     )
+#     first_call_month = QuerySelectField(
+#         "First Call Month",
+#         validators=[DataRequired()],
+#         query_factory=month_choices,
+#         get_label=("month_name"),
+#     )
+#     submit = SubmitField("Update")

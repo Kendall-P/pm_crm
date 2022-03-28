@@ -79,15 +79,15 @@ class Meeting(db.Model):
 
 class SLACall(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    per_year = db.Column(db.Integer)
-    month = db.Column(db.Integer, db.ForeignKey("month.id"))
+    per_year = db.Column(db.Integer, nullable=False)
+    month = db.Column(db.Integer, db.ForeignKey("month.id"), default=1)
     relationship_id = db.relationship("Relationship", backref="sla_call", lazy=True)
 
 
 class SLAMeeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    per_year = db.Column(db.Integer)
-    month = db.Column(db.Integer, db.ForeignKey("month.id"))
+    per_year = db.Column(db.Integer, nullable=False)
+    month = db.Column(db.Integer, db.ForeignKey("month.id"), default=1)
     relationship_id = db.relationship("Relationship", backref="sla_meeting", lazy=True)
 
 

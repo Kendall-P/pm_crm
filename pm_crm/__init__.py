@@ -1,11 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_uploads import UploadSet, configure_uploads
 
 
 # Globally accessible libraries
 db = SQLAlchemy()
 login_manager = LoginManager()
+datafiles = UploadSet("datafiles", extensions=["xls"])
 
 
 def init_db():
@@ -42,6 +44,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
+    configure_uploads(app, datafiles)
 
     with app.app_context():
         # Include our Routes
@@ -49,6 +52,7 @@ def create_app():
         from .main import main
         from .auth import auth
         from .data import data
+        from .relationship import relationship
 
         # Import template_filters
         from .modules import custom_template_filters
@@ -60,5 +64,6 @@ def create_app():
         app.register_blueprint(main.main_bp)
         app.register_blueprint(auth.auth_bp)
         app.register_blueprint(data.data_bp)
+        app.register_blueprint(relationship.rel_bp)
 
         return app
