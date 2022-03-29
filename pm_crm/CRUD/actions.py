@@ -15,6 +15,8 @@ from ..models import (
     Relationship,
     SLACall,
     SLAMeeting,
+    Meeting,
+    Call,
 )
 from .update import (
     pwd_attempt_increase,
@@ -142,6 +144,22 @@ def load_lmas(filter="", rel_data=False):
         flash("LMA load did not work", "danger")
 
 
+def load_meetings(rel_id):
+    meetings = (
+        Meeting.query.filter_by(relationship_id=rel_id)
+        .order_by(Meeting.date_updated)
+        .all()
+    )
+    return meetings
+
+
+def load_calls(rel_id):
+    calls = (
+        Call.query.filter_by(relationship_id=rel_id).order_by(Call.date_updated).all()
+    )
+    return calls
+
+
 def convert_to_lma(selected_smas):
     # smas = SMAAccount.query.filter(SMAAccount.accountnumber.in_(selected_smas)).all()
     for sma in selected_smas:
@@ -172,6 +190,20 @@ def link_to_rel(selected_lmas, selected_rel):
     update_relationship_mv(selected_rel)
     db.session.commit()
     flash("Account linked to Relationship", "success")
+
+
+def confirm_valid_month(per_year, month):
+    if per_year == 2 and month > 6:
+        month = 1
+    elif per_year == 3 and month > 4:
+        month = 1
+    elif per_year == 4 and month > 3:
+        month = 1
+    elif per_year == 6 and month > 2:
+        month = 1
+    elif per_year == 12 and month > 1:
+        month = 1
+    return month
 
 
 def file_upload_delete(filename):

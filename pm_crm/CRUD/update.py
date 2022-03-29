@@ -79,6 +79,11 @@ def update_call_sla(rel, year, month):
     flash("Call SLA updated", "success")
 
 
+def update_relationship_name(rel, name):
+    rel.name = name
+    db.session.commit()
+
+
 def database_update(account_type, data_frame, pm_userid, file_date, update_account_id):
 
     data_frame["portfolio_manager"] = pm_userid

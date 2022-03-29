@@ -2,12 +2,29 @@
 
 {% block content %}
 
+<div class="row align-items-center justify-content-center">
+    <div class="col-12">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        <!-- Categories: success (green), info (blue), warning (yellow), danger (red)-->
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} text-center border-0 bg-transparent mb-0 pb-0" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+</div>
+
 <div class="row">
     <div class="col-6 mt-5">
         <row>
             <h1 class="">{{ rel.name }} - {{ rel.market_value | currencyFormat}}</h1>
+            <button class="btn btn-danger btn-sm mb-0 pb-0" type="button" data-bs-toggle="modal"
+                data-bs-target="#renameModal">Rename</button>
         </row>
-        <row class="row ms-5 mt-5 flex-grow-1" style="min-height: 0">
+        <row class="row ms-5 mt-3 flex-grow-1" style="min-height: 0">
             <div class="col-10 h-100 d-flex flex-column">
                 <div class="border border-3" style="overflow-y: scroll;">
                     <ul class="list-group">
@@ -90,12 +107,41 @@
                     <select name="meeting_month" class="form-select form-select-sm" disabled></select>
                     {% else %}
                     <select name="meeting_month" class="form-select form-select-sm">
-                        <option selected>{{ months[meeting_sla.month - 1].month_name }}</option>
+                        <option value="{{ meeting_sla.month }}" selected>{{ months[meeting_sla.month - 1].month_name }}
+                        </option>
 
-                        {% if meeting_sla.per_year == 12 %}
-                        {% for month in months[12:] %}
+                        {% if meeting_sla.per_year == 2 %}
+                        {% for month in months[:6] %}
                         {% if month.id != meeting_sla.month %}
-                        <option value="{{ month.id}} ">{{ month.month_name }}</option>
+                        <option value="{{ month.id }}">{{ month.month_name }}</option>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% elif meeting_sla.per_year == 3 %}
+                        {% for month in months[:4] %}
+                        {% if month.id != meeting_sla.month %}
+                        <option value="{{ month.id }}">{{ month.month_name }}</option>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% elif meeting_sla.per_year == 4 %}
+                        {% for month in months[:3] %}
+                        {% if month.id != meeting_sla.month %}
+                        <option value="{{ month.id }}">{{ month.month_name }}</option>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% elif meeting_sla.per_year == 6 %}
+                        {% for month in months[:2] %}
+                        {% if month.id != meeting_sla.month %}
+                        <option value="{{ month.id }}">{{ month.month_name }}</option>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% elif meeting_sla.per_year == 12 %}
+                        {% for month in months[:1] %}
+                        {% if month.id != meeting_sla.month %}
+                        <option value="{{ month.id }}">{{ month.month_name }}</option>
                         {% endif %}
                         {% endfor %}
 
@@ -124,12 +170,52 @@
                     <select name="call_month" class="form-select form-select-sm" disabled></select>
                     {% else %}
                     <select name="call_month" class="form-select form-select-sm">
-                        <option selected>{{ months[call_sla.month - 1].month_name }}</option>
+                        <option value="{{ call_sla.month }}" selected>{{ months[call_sla.month - 1].month_name }}
+                        </option>
+
+                        {% if call_sla.per_year == 2 %}
+                        {% for month in months[:6] %}
+                        {% if month.id != call_sla.month %}
+                        <option value="{{ month.id }}">{{ month.month_name }}</option>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% elif call_sla.per_year == 3 %}
+                        {% for month in months[:4] %}
+                        {% if month.id != call_sla.month %}
+                        <option value="{{ month.id }}">{{ month.month_name }}</option>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% elif call_sla.per_year == 4 %}
+                        {% for month in months[:3] %}
+                        {% if month.id != call_sla.month %}
+                        <option value="{{ month.id }}">{{ month.month_name }}</option>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% elif call_sla.per_year == 6 %}
+                        {% for month in months[:2] %}
+                        {% if month.id != call_sla.month %}
+                        <option value="{{ month.id }}">{{ month.month_name }}</option>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% elif call_sla.per_year == 12 %}
+                        {% for month in months[:1] %}
+                        {% if month.id != call_sla.month %}
+                        <option value="{{ month.id }}">{{ month.month_name }}</option>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% else %}
                         {% for month in months %}
                         {% if month.id != call_sla.month %}
                         <option value="{{ month.id }}">{{ month.month_name }}</option>
                         {% endif %}
                         {% endfor %}
+                        {% endif %}
+
                     </select>
                     {% endif %}
                 </div>
@@ -142,7 +228,87 @@
 
                 </div>
             </div>
+            <div class="row mt-5 flex-grow-1" style="min-height: 0">
+                <div class="col-6 h-100 d-flex flex-column">
+                    <div class="mx-5 my-3 border border-3" style="overflow-y: scroll;">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Meeting Dates</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if meetings %}
+                                {% for meeting in meetings %}
+                                <tr>
+                                    <td>
+                                        {{ meeting.date_updated }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-6 h-100 d-flex flex-column">
+                    <div class="mx-5 my-3 border border-3" style="overflow-y: scroll;">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Call Dates</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if calls %}
+                                {% for call in calls %}
+                                <tr>
+                                    <td>
+                                        {{ call.date_updated }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </form>
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="renameModal" tabindex="-1" aria-labelledby="renameModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="renameModalLabel">Rename relationship</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="POST" novalidate>
+                <div class="modal-body">
+
+                    {{ rename_form.csrf_token }}
+
+                    {{ rename_form.name(placeholder='New Relationship Name', class_="form-control") }}
+
+                    {% for err in rename_form.name.errors: %}
+                    <div class="alert alert-danger text-center border-0 bg-transparent" role="alert">
+                        {{ err }}
+                    </div>
+                    {% endfor %}
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    {{ rename_form.submit(placeholder="Rename", class_="btn btn-danger") }}
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
