@@ -25,7 +25,7 @@ def relationship(name):
         if request.method == "POST":
             actions.clear_flashes()
             if request.form["action"] == "update_sla":
-                print("Button worked")
+
                 m_year = int(request.form.get("meeting_year") or 0)
                 m_month = int(request.form.get("meeting_month") or 0)
                 c_year = int(request.form.get("call_year") or 0)

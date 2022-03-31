@@ -20,7 +20,7 @@
 </div>
 
 <form id="rel_update" class="row flex-grow-1" style="min-height: 0" method="POST">
-    <div class="col-8 h-100 d-flex flex-column">
+    <div class="col-9 h-100 d-flex flex-column">
         <div class="mx-5 my-3 border border-3" style="overflow-y: scroll;">
             <table class="table table-striped">
                 <thead>
@@ -52,8 +52,8 @@
                             </button>
                             Market Value
                         </th>
-                        <th scope="col">Meeting SLA</th>
-                        <th scope="col">Call SLA</th>
+                        <th scope="col">Last Meeting</th>
+                        <th scope="col">Last Call</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,8 +65,8 @@
                                 href="{{ url_for('rel_bp.relationship', name=relationship.name) }}">{{relationship.name}}</a>
                         </td>
                         <td>{{ relationship.market_value | currencyFormat }}</td>
-                        <td>{{ relationship.meeting_sla }}</td>
-                        <td>{{ relationship.call_sla }}</td>
+                        <td>{{ relationship.meetings.date_updated }}</td>
+                        <td>{{ relationship.calls.date_updated }}</td>
                     </tr>
                     {% endfor %}
                     {% endif %}
@@ -75,26 +75,57 @@
         </div>
     </div>
 
-    <div class="col-4 h-100 d-flex flex-column">
-        <div class="mx-5 my-3 border border-3" style="overflow-y: scroll;">
-            <ul class="list-group">
-                <li class="listgroup item">
-                    <p>Meetings</p>
-                </li>
-            </ul>
-        </div>
-        <div class="row flex-grow-1" style="min-height: 0">
-            <div class="col-12 h-100 d-flex flex-column">
-                <div class="mx-5 my-3 border border-3" style="overflow-y: scroll;">
-                    <ul class="list-group">
-                        <li class="listgroup item">
-                            <p>Calls</p>
-                        </li>
-                    </ul>
+    <div class="col-3 h-100 d-flex flex-column">
+        <form action="" method="POST">
+            <div class="text-center">
+                <button type="submit" name="action" value="update"
+                    class="btn btn-secondary btn-sm text">Completed</button>
+            </div>
+            <div class="mx-5 my-3 border border-3" style="overflow-y: scroll;">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <h5>Meetings this month</h5>
+                    </li>
+                    {% if rels_meetings %}
+                    {% for r_m in rels_meetings%}
+                    <li class="list-group-item py-0">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="meeting" value="{{ r_m.id }}"
+                                id="flexCheck-{{ r_m.id }}">
+                            <label class="form-check-label" for="flexCheck{{ r_m.id }}">
+                                {{ r_m.name }}
+                            </label>
+                        </div>
+                    </li>
+                    {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="row flex-grow-1" style="min-height: 0">
+                <div class="col-12 h-100 d-flex flex-column">
+                    <div class="mx-5 my-3 border border-3" style="overflow-y: scroll;">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <h5>Calls this month</h5>
+                            </li>
+                            {% if rels_calls %}
+                            {% for r_c in rels_calls%}
+                            <li class="list-group-item py-0">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="call" value="{{ r_c.id }}"
+                                        id="flexCheck-{{ r_c.id }}">
+                                    <label class="form-check-label" for="flexCheck{{ r_c.id }}">
+                                        {{ r_c.name }}
+                                    </label>
+                                </div>
+                            </li>
+                            {% endfor %}
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
-
+        </form>
     </div>
 </form>
 

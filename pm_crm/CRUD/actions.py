@@ -1,6 +1,7 @@
+from calendar import month
 from flask import flash, request, session
 from flask_login import login_user, current_user
-from datetime import datetime
+from datetime import date, datetime
 from os import remove
 import pandas as pd
 from .. import datafiles, db
@@ -142,6 +143,74 @@ def load_lmas(filter="", rel_data=False):
         return lmas
     else:
         flash("LMA load did not work", "danger")
+
+
+def month_values(cm, num_meetings):
+    valid_months = [x for x in range(1, 13)]
+    meetings = [x for x in range(1, num_meetings)]
+    values = set()
+    values.add(cm)
+
+    values.update(
+        [
+            cm + int(12 / num_meetings) * x
+            for x in meetings
+            if cm + int(12 / num_meetings) * x in valid_months
+        ]
+    )
+    values.update(
+        [
+            cm - int(12 / num_meetings) * x
+            for x in meetings
+            if cm - int(12 / num_meetings) * x in valid_months
+        ]
+    )
+
+    return values
+
+
+def load_slas(query):
+    current_month = date.today().month
+    month_filter = {}
+    sla_options = [1, 2, 3, 4, 6]
+    for option in sla_options:
+        values = month_values(current_month, option)
+        month_filter[option] = values
+    slas = []
+    for q in query:
+        if q.per_year == 12:
+            slas.append(q.id)
+        elif q.per_year == 0:
+            continue
+        else:
+            for k, v in month_filter.items():
+                if q.per_year == k and q.month in v:
+                    slas.append(q.id)
+    return slas
+
+
+def load_meeting_slas(meeting_sla_ids):
+    query = SLAMeeting.query.filter(SLAMeeting.id.in_(meeting_sla_ids)).all()
+    meeting_slas = load_slas(query)
+    relationships = (
+        Relationship.query.filter_by(portfolio_manager=current_user.id)
+        .filter(Relationship.meeting_sla.in_(meeting_slas))
+        .order_by(Relationship.name)
+        .all()
+    )
+    return relationships
+
+
+def load_call_slas(call_sla_ids):
+    query = SLACall.query.filter(SLACall.id.in_(call_sla_ids)).all()
+    call_slas = load_slas(query)
+    relationships = (
+        Relationship.query.filter_by(portfolio_manager=current_user.id)
+        .filter(Relationship.call_sla.in_(call_slas))
+        .order_by(Relationship.name)
+        .all()
+    )
+    return relationships
 
 
 def load_meetings(rel_id):

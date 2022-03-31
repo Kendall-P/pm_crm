@@ -24,6 +24,11 @@ def main():
     else:
         relationships = actions.load_relationships(filter="", sort="mv")
 
+    m_slas = {relationship.meeting_sla for relationship in relationships}
+    c_slas = {relationship.call_sla for relationship in relationships}
+    rels_meetings = actions.load_meeting_slas(m_slas)
+    rels_calls = actions.load_call_slas(c_slas)
+
     try:
         if request.method == "POST":
             actions.clear_flashes()
@@ -33,10 +38,18 @@ def main():
             elif request.form["action"] == "sort_mv":
                 session["rel_sort"] = "mv"
                 return redirect(url_for("main_bp.main"))
+            elif request.form["action"] == "update":
+                print(request.form.getlist("meeting"))
+                print(request.form.getlist("call"))
     except BadRequestKeyError:
         pass
 
-    return render_template("main.html", relationships=relationships)
+    return render_template(
+        "main.html",
+        relationships=relationships,
+        rels_meetings=rels_meetings,
+        rels_calls=rels_calls,
+    )
 
 
 @main_bp.route("/logout")
