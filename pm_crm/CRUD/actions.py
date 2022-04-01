@@ -190,33 +190,58 @@ def load_slas(query):
 
 
 def load_meeting_slas(meeting_sla_ids):
-    query = SLAMeeting.query.filter(SLAMeeting.id.in_(meeting_sla_ids)).all()
-    meeting_slas = load_slas(query)
+    meeting_slas = SLAMeeting.query.filter(SLAMeeting.id.in_(meeting_sla_ids)).all()
+    return meeting_slas
+
+
+def load_call_slas(call_sla_ids):
+    call_slas = SLACall.query.filter(SLACall.id.in_(call_sla_ids)).all()
+    return call_slas
+
+
+def load_rels_with_meetings(meeting_slas):
+    meeting_slas = load_slas(meeting_slas)
     relationships = (
         Relationship.query.filter_by(portfolio_manager=current_user.id)
         .filter(Relationship.meeting_sla.in_(meeting_slas))
         .order_by(Relationship.name)
         .all()
     )
+
+    for rel in relationships:
+        for i in range(len(rel.meetings)):
+            if (
+                rel.meetings[i].date_updated.year == date.today().year
+                and rel.meetings[i].date_updated.month == date.today().month
+            ):
+                relationships.remove(rel)
     return relationships
 
 
-def load_call_slas(call_sla_ids):
-    query = SLACall.query.filter(SLACall.id.in_(call_sla_ids)).all()
-    call_slas = load_slas(query)
+def load_rels_with_calls(call_slas):
+    call_slas = load_slas(call_slas)
     relationships = (
         Relationship.query.filter_by(portfolio_manager=current_user.id)
         .filter(Relationship.call_sla.in_(call_slas))
         .order_by(Relationship.name)
         .all()
     )
+
+    for rel in relationships:
+        for i in range(len(rel.calls)):
+            if (
+                rel.calls[i].date_updated.year == date.today().year
+                and rel.calls[i].date_updated.month == date.today().month
+            ):
+                relationships.remove(rel)
+
     return relationships
 
 
 def load_meetings(rel_id):
     meetings = (
         Meeting.query.filter_by(relationship_id=rel_id)
-        .order_by(Meeting.date_updated)
+        .order_by(Meeting.date_updated.desc())
         .all()
     )
     return meetings
@@ -224,7 +249,9 @@ def load_meetings(rel_id):
 
 def load_calls(rel_id):
     calls = (
-        Call.query.filter_by(relationship_id=rel_id).order_by(Call.date_updated).all()
+        Call.query.filter_by(relationship_id=rel_id)
+        .order_by(Call.date_updated.desc())
+        .all()
     )
     return calls
 

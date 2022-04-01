@@ -53,6 +53,7 @@ def create_app():
         from .auth import auth
         from .data import data
         from .relationship import relationship
+        from .reports import reports
 
         # Import template_filters
         from .modules import custom_template_filters
@@ -65,5 +66,6 @@ def create_app():
         app.register_blueprint(auth.auth_bp)
         app.register_blueprint(data.data_bp)
         app.register_blueprint(relationship.rel_bp)
+        app.register_blueprint(reports.reports_bp)
 
         return app

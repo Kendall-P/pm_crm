@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, session, request
 from flask_login import login_required, logout_user, current_user
 from werkzeug.exceptions import BadRequestKeyError
-from pm_crm.CRUD import actions
+from pm_crm.CRUD import actions, create
 
 
 # Blueprint Configuration
@@ -26,8 +26,14 @@ def main():
 
     m_slas = {relationship.meeting_sla for relationship in relationships}
     c_slas = {relationship.call_sla for relationship in relationships}
-    rels_meetings = actions.load_meeting_slas(m_slas)
-    rels_calls = actions.load_call_slas(c_slas)
+    meeting_slas = actions.load_meeting_slas(m_slas)
+    call_slas = actions.load_call_slas(c_slas)
+    meet_peryear = {
+        meeting_sla.id: meeting_sla.per_year for meeting_sla in meeting_slas
+    }
+    call_peryear = {call_sla.id: call_sla.per_year for call_sla in call_slas}
+    rels_meetings = actions.load_rels_with_meetings(meeting_slas)
+    rels_calls = actions.load_rels_with_calls(call_slas)
 
     try:
         if request.method == "POST":
@@ -39,14 +45,20 @@ def main():
                 session["rel_sort"] = "mv"
                 return redirect(url_for("main_bp.main"))
             elif request.form["action"] == "update":
-                print(request.form.getlist("meeting"))
-                print(request.form.getlist("call"))
+                meetings = request.form.getlist("meeting")
+                calls = request.form.getlist("call")
+                if meetings:
+                    create.new_meeting(meetings)
+                if calls:
+                    create.new_call(calls)
     except BadRequestKeyError:
         pass
 
     return render_template(
         "main.html",
         relationships=relationships,
+        meet_peryear=meet_peryear,
+        call_peryear=call_peryear,
         rels_meetings=rels_meetings,
         rels_calls=rels_calls,
     )

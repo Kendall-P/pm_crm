@@ -2,7 +2,7 @@
 {% block content %}
 
 {% if current_user.is_authenticated %}
-<h1>Welcome, {{ current_user.name }}</h1>
+<h1>Welcome, {{ current_user.name.split()[0] }}</h1>
 {% endif %}
 
 <div class="m-3">
@@ -22,7 +22,7 @@
 <form id="rel_update" class="row flex-grow-1" style="min-height: 0" method="POST">
     <div class="col-9 h-100 d-flex flex-column">
         <div class="mx-5 my-3 border border-3" style="overflow-y: scroll;">
-            <table class="table table-striped">
+            <table class="table table-sm table-striped">
                 <thead>
                     <tr>
                         <th scope="col"></th>
@@ -52,8 +52,10 @@
                             </button>
                             Market Value
                         </th>
-                        <th scope="col">Last Meeting</th>
-                        <th scope="col">Last Call</th>
+                        <th class="text-center" scope="col">Last Meeting</th>
+                        <th class="text-center" scope="col">Meetings per Year</th>
+                        <th class="text-center" scope="col">Last Call</th>
+                        <th class="text-center" scope="col">Call per Year</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,8 +67,10 @@
                                 href="{{ url_for('rel_bp.relationship', name=relationship.name) }}">{{relationship.name}}</a>
                         </td>
                         <td>{{ relationship.market_value | currencyFormat }}</td>
-                        <td>{{ relationship.meetings.date_updated }}</td>
-                        <td>{{ relationship.calls.date_updated }}</td>
+                        <td class="text-center">{{ relationship.meetings | latestDate }}</td>
+                        <td class="text-center">{{ meet_peryear[relationship.meeting_sla] }}</td>
+                        <td class="text-center">{{ relationship.calls | latestDate }}</td>
+                        <td class="text-center">{{ call_peryear[relationship.call_sla] }}</td>
                     </tr>
                     {% endfor %}
                     {% endif %}

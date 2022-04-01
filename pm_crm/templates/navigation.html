@@ -10,6 +10,7 @@
                 <a class="nav-link" href="{{ url_for('main_bp.home') }}">Home</a>
                 {% else %}
                 <a class="nav-link" href="{{ url_for('main_bp.main') }}">Home</a>
+                <a class="nav-link" href="{{ url_for('reports_bp.reports') }}">Reports</a>
                 <a class="nav-link" href="{{ url_for('data_bp.update_data') }}">Update Data</a>
                 {% if current_user.access.access_type == 'admin' %}
                 <a class="nav-link" href="{{ url_for('auth_bp.register') }}">Register User</a>
