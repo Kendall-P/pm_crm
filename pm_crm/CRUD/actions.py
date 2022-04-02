@@ -83,7 +83,8 @@ def load_relationships(filter="", sort="name"):
     if relationships:
         return relationships
     else:
-        flash("Relationships load did not work", "danger")
+        # flash("Relationships load did not work", "danger")
+        pass
 
 
 def load_months():
@@ -117,7 +118,8 @@ def load_smas():
     if smas:
         return smas
     else:
-        flash("SMA load did not work", "danger")
+        # flash("SMA load did not work", "danger")
+        pass
 
 
 def load_lmas(filter="", rel_data=False):
@@ -142,7 +144,8 @@ def load_lmas(filter="", rel_data=False):
     if lmas:
         return lmas
     else:
-        flash("LMA load did not work", "danger")
+        # flash("LMA load did not work", "danger")
+        pass
 
 
 def month_values(cm, num_meetings):

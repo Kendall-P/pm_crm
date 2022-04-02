@@ -1,11 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_uploads import UploadSet, configure_uploads
 
 
 # Globally accessible libraries
 db = SQLAlchemy()
+migrate = Migrate()
 login_manager = LoginManager()
 datafiles = UploadSet("datafiles", extensions=["xls"])
 
@@ -29,8 +31,8 @@ def init_db():
         populate_db,
     )
 
-    db.drop_all()
-    db.create_all()
+    # db.drop_all()
+    # db.create_all()
     if Access.query.get(1) == None:
         populate_db()
 
@@ -42,6 +44,7 @@ def create_app():
 
     # Initialize Plugins
     db.init_app(app)
+    migrate.init_app(app, db)
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
     configure_uploads(app, datafiles)
