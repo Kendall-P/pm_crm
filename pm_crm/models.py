@@ -77,18 +77,41 @@ class Meeting(db.Model):
     date_updated = db.Column(db.DateTime, nullable=False)
 
 
+months_slas = db.Table(
+    "months_slas",
+    db.Column("month_id", db.Integer, db.ForeignKey("month.id"), primary_key=True),
+    db.Column("slacall_id", db.Integer, db.ForeignKey("sla_call.id"), primary_key=True),
+    db.Column(
+        "slameeting_id", db.Integer, db.ForeignKey("sla_meeting.id"), primary_key=True
+    ),
+)
+
+
 class SLACall(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     per_year = db.Column(db.Integer, nullable=False)
-    month = db.Column(db.Integer, db.ForeignKey("month.id"), default=1)
     relationship_id = db.relationship("Relationship", backref="sla_call", lazy=True)
 
 
 class SLAMeeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     per_year = db.Column(db.Integer, nullable=False)
-    month = db.Column(db.Integer, db.ForeignKey("month.id"), default=1)
     relationship_id = db.relationship("Relationship", backref="sla_meeting", lazy=True)
+
+
+class Month(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    month_name = db.Column(db.String(9), unique=True, nullable=False)
+    meeting_sla = db.relationship(
+        "SLAMeeting",
+        secondary=months_slas,
+        backref=db.backref("months"),
+    )
+    call_sla = db.relationship(
+        "SLACall",
+        secondary=months_slas,
+        backref=db.backref("months"),
+    )
 
 
 class LMAAccount(db.Model):
@@ -154,13 +177,6 @@ class Access(db.Model):
     users = db.relationship("User", backref="access", lazy=True)
 
 
-class Month(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    month_name = db.Column(db.String(9), unique=True, nullable=False)
-    call_sla = db.relationship("SLACall", backref="call_month", lazy=True)
-    meeting_sla = db.relationship("SLAMeeting", backref="meeting_month", lazy=True)
-
-
 def add_access_types():
     for access in ACCESS_TYPE:
         new = Access(access_type=access)
@@ -183,8 +199,8 @@ def add_months():
 
 
 def add_sla():
-    new_sla_call = SLACall(per_year=0, month=1)
-    new_sla_meeting = SLAMeeting(per_year=0, month=1)
+    new_sla_call = SLACall(per_year=0)
+    new_sla_meeting = SLAMeeting(per_year=0)
     db.session.add(new_sla_call)
     db.session.add(new_sla_meeting)
     db.session.commit()

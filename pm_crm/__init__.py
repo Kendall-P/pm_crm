@@ -15,19 +15,19 @@ datafiles = UploadSet("datafiles", extensions=["xls"])
 def init_db():
     # Create sql tables for our date models
     from .models import (
-        User,
-        Relationship,
-        Call,
-        Meeting,
-        SLACall,
-        SLAMeeting,
-        LMAAccount,
-        SMAAccount,
-        UpdateAccount,
-        InvResp,
-        TAOfficer,
+        # User,
+        # Relationship,
+        # Call,
+        # Meeting,
+        # SLACall,
+        # SLAMeeting,
+        # LMAAccount,
+        # SMAAccount,
+        # UpdateAccount,
+        # InvResp,
+        # TAOfficer,
         Access,
-        Month,
+        # Month,
         populate_db,
     )
 
@@ -62,7 +62,7 @@ def create_app():
         from .modules import custom_template_filters
 
         # Uncomment to reset database.
-        # init_db()
+        init_db()
 
         # Register Blueprints
         app.register_blueprint(main.main_bp)

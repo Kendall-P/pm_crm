@@ -212,6 +212,7 @@ def load_rels_with_meetings(meeting_slas):
     )
 
     for rel in relationships:
+
         for i in range(len(rel.meetings)):
             if (
                 rel.meetings[i].date_updated.year == date.today().year

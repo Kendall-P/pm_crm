@@ -111,130 +111,19 @@
             <div class="row">
                 <div class="col">
                     <select name="meeting_year" class="form-select form-select-sm">
-                        <option selected>{{ meeting_sla.per_year }}</option>
-                        {% for n in [0, 1, 2, 3, 4, 6, 12] %}
-                        {% if n != meeting_sla.per_year %}
-                        <option value="{{ n }}">{{ n }}</option>
-                        {% endif %}
-                        {% endfor %}
+
                     </select>
                 </div>
                 <div class="col">
-                    {% if meeting_sla.per_year == 0 %}
                     <select name="meeting_month" class="form-select form-select-sm" disabled></select>
-                    {% else %}
-                    <select name="meeting_month" class="form-select form-select-sm">
-                        <option value="{{ meeting_sla.month }}" selected>{{ months[meeting_sla.month - 1].month_name }}
-                        </option>
-
-                        {% if meeting_sla.per_year == 2 %}
-                        {% for month in months[:6] %}
-                        {% if month.id != meeting_sla.month %}
-                        <option value="{{ month.id }}">{{ month.month_name }}</option>
-                        {% endif %}
-                        {% endfor %}
-
-                        {% elif meeting_sla.per_year == 3 %}
-                        {% for month in months[:4] %}
-                        {% if month.id != meeting_sla.month %}
-                        <option value="{{ month.id }}">{{ month.month_name }}</option>
-                        {% endif %}
-                        {% endfor %}
-
-                        {% elif meeting_sla.per_year == 4 %}
-                        {% for month in months[:3] %}
-                        {% if month.id != meeting_sla.month %}
-                        <option value="{{ month.id }}">{{ month.month_name }}</option>
-                        {% endif %}
-                        {% endfor %}
-
-                        {% elif meeting_sla.per_year == 6 %}
-                        {% for month in months[:2] %}
-                        {% if month.id != meeting_sla.month %}
-                        <option value="{{ month.id }}">{{ month.month_name }}</option>
-                        {% endif %}
-                        {% endfor %}
-
-                        {% elif meeting_sla.per_year == 12 %}
-                        {% for month in months[:1] %}
-                        {% if month.id != meeting_sla.month %}
-                        <option value="{{ month.id }}">{{ month.month_name }}</option>
-                        {% endif %}
-                        {% endfor %}
-
-                        {% else %}
-                        {% for month in months %}
-                        {% if month.id != meeting_sla.month %}
-                        <option value="{{ month.id }}">{{ month.month_name }}</option>
-                        {% endif %}
-                        {% endfor %}
-                        {% endif %}
-                    </select>
-                    {% endif %}
                 </div>
                 <div class="col">
                     <select name="call_year" class="form-select form-select-sm">
-                        <option selected>{{ call_sla.per_year }}</option>
-                        {% for n in [0, 1, 2, 3, 4, 6, 12] %}
-                        {% if n != call_sla.per_year %}
-                        <option value="{{ n }}">{{ n }}</option>
-                        {% endif %}
-                        {% endfor %}
+
                     </select>
                 </div>
                 <div class="col">
-                    {% if call_sla.per_year == 0 %}
                     <select name="call_month" class="form-select form-select-sm" disabled></select>
-                    {% else %}
-                    <select name="call_month" class="form-select form-select-sm">
-                        <option value="{{ call_sla.month }}" selected>{{ months[call_sla.month - 1].month_name }}
-                        </option>
-
-                        {% if call_sla.per_year == 2 %}
-                        {% for month in months[:6] %}
-                        {% if month.id != call_sla.month %}
-                        <option value="{{ month.id }}">{{ month.month_name }}</option>
-                        {% endif %}
-                        {% endfor %}
-
-                        {% elif call_sla.per_year == 3 %}
-                        {% for month in months[:4] %}
-                        {% if month.id != call_sla.month %}
-                        <option value="{{ month.id }}">{{ month.month_name }}</option>
-                        {% endif %}
-                        {% endfor %}
-
-                        {% elif call_sla.per_year == 4 %}
-                        {% for month in months[:3] %}
-                        {% if month.id != call_sla.month %}
-                        <option value="{{ month.id }}">{{ month.month_name }}</option>
-                        {% endif %}
-                        {% endfor %}
-
-                        {% elif call_sla.per_year == 6 %}
-                        {% for month in months[:2] %}
-                        {% if month.id != call_sla.month %}
-                        <option value="{{ month.id }}">{{ month.month_name }}</option>
-                        {% endif %}
-                        {% endfor %}
-
-                        {% elif call_sla.per_year == 12 %}
-                        {% for month in months[:1] %}
-                        {% if month.id != call_sla.month %}
-                        <option value="{{ month.id }}">{{ month.month_name }}</option>
-                        {% endif %}
-                        {% endfor %}
-
-                        {% else %}
-                        {% for month in months %}
-                        {% if month.id != call_sla.month %}
-                        <option value="{{ month.id }}">{{ month.month_name }}</option>
-                        {% endif %}
-                        {% endfor %}
-                        {% endif %}
-
-                    </select>
-                    {% endif %}
                 </div>
             </div>
             <div class="row mt-3">
