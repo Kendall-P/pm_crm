@@ -25,6 +25,7 @@ class RegistrationForm(FlaskForm):
         validators=[DataRequired()],
         query_factory=access_type_choices,
         get_label=("access_type"),
+        default=lambda: Access.query.filter_by(access_type="PM").first(),
     )
     password = PasswordField("Password", validators=[DataRequired()])
     confirm_password = PasswordField(
