@@ -1,5 +1,5 @@
-from flask import current_app as app, make_response
-from flask import render_template, flash, url_for, redirect
+from flask import current_app as app
+from flask import flash, url_for, redirect
 from .models import User
 
 

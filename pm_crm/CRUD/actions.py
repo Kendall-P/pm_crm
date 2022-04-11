@@ -1,6 +1,5 @@
-from calendar import month
-from flask import flash, request, session
-from flask_login import login_user, current_user
+from flask import flash, session
+from flask_login import current_user
 from datetime import date, datetime
 from os import remove
 import pandas as pd
@@ -20,8 +19,6 @@ from ..models import (
     Call,
 )
 from .update import (
-    pwd_attempt_increase,
-    clear_attempts,
     database_update,
     update_sma_link,
     update_rel_link,
@@ -29,25 +26,6 @@ from .update import (
 )
 from .create import new_ta, new_update_account_entry, new_lma_from_sma
 from .delete import delete_sma
-
-
-def login(user_id, password):
-    user = User.query.filter_by(id=user_id.lower()).first()
-    if user == None:
-        flash("Failed login.", "danger")
-        return "auth_bp.login"
-    if user.attempts > 4:
-        flash("Account locked.", "danger")
-        return "auth_bp.login"
-    if user and user.check_password(password):
-        login_user(user)
-        clear_attempts(user)
-        next_page = request.args.get("next")
-        return next_page or "main_bp.main"
-    else:
-        incorrect_password = pwd_attempt_increase(user)
-        flash(incorrect_password, "danger")
-        return "auth_bp.login"
 
 
 def clear_flashes():

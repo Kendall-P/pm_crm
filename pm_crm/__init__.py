@@ -52,11 +52,11 @@ def create_app():
     with app.app_context():
         # Include our Routes
         from . import routes
-        from .main import main
-        from .auth import auth
-        from .data import data
-        from .relationship import relationship
-        from .reports import reports
+        from .main import routes as main
+        from .auth import routes as auth
+        from .data import routes as data
+        from .relationship import routes as relationship
+        from .reports import routes as reports
 
         # Import template_filters
         from .modules import custom_template_filters

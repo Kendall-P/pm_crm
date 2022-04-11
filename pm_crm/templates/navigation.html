@@ -15,7 +15,7 @@
                 {% if current_user.access.access_type == 'admin' %}
                 <a class="nav-link" href="{{ url_for('auth_bp.register') }}">Register User</a>
                 {% endif %}
-                <a class="nav-link" href="{{ url_for('main_bp.logout') }}">Log Out</a>
+                <a class="nav-link" href="{{ url_for('auth_bp.logout') }}">Log Out</a>
                 {% endif %}
             </div>
         </div>

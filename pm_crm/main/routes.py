@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, session, request
-from flask_login import login_required, logout_user, current_user
+from flask_login import login_required
 from werkzeug.exceptions import BadRequestKeyError
 from pm_crm.CRUD import actions, create
 
@@ -67,10 +67,3 @@ def main():
         "main.html",
         relationships=relationships,
     )
-
-
-@main_bp.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for("main_bp.home"))
