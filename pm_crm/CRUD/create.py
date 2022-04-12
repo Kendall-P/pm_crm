@@ -5,7 +5,6 @@ from pm_crm.models import (
     TAOfficer,
     UpdateAccount,
     LMAAccount,
-    Relationship,
     SLAMeeting,
     SLACall,
     Meeting,
@@ -35,12 +34,6 @@ def new_lma_from_sma(sma):
         update_id=sma.update_id,
     )
     db.session.add(new_lma)
-
-
-def new_relationship(name):
-    new_rel = Relationship(name=name.title(), portfolio_manager=current_user.id)
-    db.session.add(new_rel)
-    db.session.commit()
 
 
 def new_meeting_sla(year, month):

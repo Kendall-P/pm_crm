@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from flask_uploads import UploadNotAllowed
 from werkzeug.exceptions import BadRequestKeyError
-from pm_crm.forms import (
+from pm_crm.models import db
+from pm_crm.data.forms import (
     FileUploadForm,
     AccountFilterForm,
     RelationshipFilterForm,
@@ -118,6 +119,7 @@ def link_accounts():
     except BadRequestKeyError:
         if form.validate_on_submit():
             create.new_relationship(form.name.data)
+            db.session.commit()
             return redirect(url_for("data_bp.link_accounts"))
 
     return render_template(
