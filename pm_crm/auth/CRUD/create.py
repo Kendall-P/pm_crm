@@ -3,9 +3,6 @@ from pm_crm.models import db, User
 
 
 def new_user(form):
-    if User.query.filter_by(id=form.user_id.data).first():
-        flash("User already exists.", "danger")
-        return "auth_bp.register"
     try:
         new_user = User(
             id=form.user_id.data.lower(),

@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms_sqlalchemy.fields import QuerySelectField
-from wtforms.validators import DataRequired, Length, EqualTo
-from pm_crm.models import Access
+from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
+from pm_crm.models import Access, User
 
 
 def access_type_choices():
@@ -28,6 +28,11 @@ class RegistrationForm(FlaskForm):
     )
     submit = SubmitField("Create")
 
+    def validate_user_id(self, user_id):
+        user = User.query.filter_by(id=user_id.data.lower()).first()
+        if user:
+            raise ValidationError("User already exists.")
+
 
 class LoginForm(FlaskForm):
     user_id = StringField(
@@ -36,3 +41,10 @@ class LoginForm(FlaskForm):
     )
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Log In")
+
+    def validate_user_id(self, user_id):
+        user = User.query.filter_by(id=user_id.data.lower()).first()
+        if user == None:
+            raise ValidationError("User does not exist.")
+        if user.attempts > 4:
+            raise ValidationError("Account locked.")

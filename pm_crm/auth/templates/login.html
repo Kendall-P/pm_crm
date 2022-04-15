@@ -1,20 +1,29 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="text-center mt-5">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{ category }} text-center border-0 bg-transparent" role="alert">
-        {{ message }}
+
+<div class="row">
+    <div class="col-12 mt-5">
+        <div class="text-center">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} text-center border-0 bg-transparent" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="alert text-center border-0 bg-transparent" role="alert">
+                <p> </p>
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
     </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
 </div>
 
-<div class="row mt-5">
-    <div class="col-12">
+<div class="row">
+    <div class="col-12 mt-5">
         <h1 class="text-center mb-3">Login</h1>
     </div>
 
