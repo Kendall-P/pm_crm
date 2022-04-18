@@ -20,12 +20,9 @@ from ..models import (
 )
 from .update import (
     database_update,
-    update_sma_link,
     update_rel_link,
-    update_relationship_mv,
 )
-from .create import new_ta, new_update_account_entry, new_lma_from_sma
-from .delete import delete_sma
+from .create import new_ta, new_update_account_entry
 
 
 def clear_flashes():
@@ -87,43 +84,43 @@ def load_call_sla(rel_id):
     return call_sla
 
 
-def load_smas():
-    smas = (
-        SMAAccount.query.filter_by(portfolio_manager=current_user.id, lma_account=None)
-        .order_by(SMAAccount.account_name)
-        .all()
-    )
-    if smas:
-        return smas
-    else:
-        # flash("SMA load did not work", "danger")
-        pass
+# def load_smas():
+#     smas = (
+#         SMAAccount.query.filter_by(portfolio_manager=current_user.id, lma_account=None)
+#         .order_by(SMAAccount.account_name)
+#         .all()
+#     )
+#     if smas:
+#         return smas
+#     else:
+#         # flash("SMA load did not work", "danger")
+#         pass
 
 
-def load_lmas(filter="", rel_data=False):
-    if filter != "":
-        query = (
-            LMAAccount.query.filter_by(portfolio_manager=current_user.id)
-            .filter(LMAAccount.account_name.contains(filter))
-            .order_by(LMAAccount.account_name)
-        )
-        if rel_data:
-            query = query.filter_by(relationship_id=None)
-        lmas = query.all()
-        if len(lmas) == 0:
-            flash("No accounts by that filter", "danger")
-    if filter == "" or len(lmas) == 0:
-        query = LMAAccount.query.filter_by(portfolio_manager=current_user.id).order_by(
-            LMAAccount.account_name
-        )
-        if rel_data:
-            query = query.filter_by(relationship_id=None)
-        lmas = query.all()
-    if lmas:
-        return lmas
-    else:
-        # flash("LMA load did not work", "danger")
-        pass
+# def load_lmas(filter="", rel_data=False):
+#     if filter != "":
+#         query = (
+#             LMAAccount.query.filter_by(portfolio_manager=current_user.id)
+#             .filter(LMAAccount.account_name.contains(filter))
+#             .order_by(LMAAccount.account_name)
+#         )
+#         if rel_data:
+#             query = query.filter_by(relationship_id=None)
+#         lmas = query.all()
+#         if len(lmas) == 0:
+#             flash("No accounts by that filter", "danger")
+#     if filter == "" or len(lmas) == 0:
+#         query = LMAAccount.query.filter_by(portfolio_manager=current_user.id).order_by(
+#             LMAAccount.account_name
+#         )
+#         if rel_data:
+#             query = query.filter_by(relationship_id=None)
+#         lmas = query.all()
+#     if lmas:
+#         return lmas
+#     else:
+#         # flash("LMA load did not work", "danger")
+#         pass
 
 
 def month_values(cm, num_meetings):
@@ -237,26 +234,26 @@ def load_calls(rel_id):
     return calls
 
 
-def convert_to_lma(selected_smas):
-    # smas = SMAAccount.query.filter(SMAAccount.accountnumber.in_(selected_smas)).all()
-    for sma in selected_smas:
-        current_sma = SMAAccount.query.filter_by(accountnumber=sma).first()
-        new_lma_from_sma(current_sma)
-        delete_sma(current_sma)
-    db.session.commit()
-    flash("SMA converted to LMA", "success")
+# def convert_to_lma(selected_smas):
+#     # smas = SMAAccount.query.filter(SMAAccount.accountnumber.in_(selected_smas)).all()
+#     for sma in selected_smas:
+#         current_sma = SMAAccount.query.filter_by(accountnumber=sma).first()
+#         new_lma_from_sma(current_sma)
+#         delete_sma(current_sma)
+#     db.session.commit()
+#     flash("SMA converted to LMA", "success")
 
 
-def link_to_lma(selected_smas, selected_lma):
-    for sma in selected_smas:
-        current_sma = SMAAccount.query.filter_by(accountnumber=sma).first()
-        update_sma_link(current_sma, selected_lma)
-    db.session.commit()
-    lma = LMAAccount.query.filter_by(accountnumber=selected_lma).first()
-    if lma.relationship_id != None:
-        update_relationship_mv(lma.relationship_id)
-    db.session.commit()
-    flash("SMA linked to LMA", "success")
+# def link_to_lma(selected_smas, selected_lma):
+#     for sma in selected_smas:
+#         current_sma = SMAAccount.query.filter_by(accountnumber=sma).first()
+#         update_sma_link(current_sma, selected_lma)
+#     db.session.commit()
+#     lma = LMAAccount.query.filter_by(accountnumber=selected_lma).first()
+#     if lma.relationship_id != None:
+#         update_relationship_mv(lma.relationship_id)
+#     db.session.commit()
+#     flash("SMA linked to LMA", "success")
 
 
 def link_to_rel(selected_lmas, selected_rel):

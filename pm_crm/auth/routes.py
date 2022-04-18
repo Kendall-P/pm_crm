@@ -15,7 +15,7 @@ def login():
     if form.validate_on_submit():
         user = actions.login(form.user_id.data, form.password.data)
         if user:
-            if current_user.attempts > 0:
+            if user.attempts > 0:
                 update.clear_attempts(user)
                 db.session.commit()
             next_page = request.args.get("next")
@@ -23,14 +23,15 @@ def login():
                 redirect(next_page) if next_page else redirect(url_for("main_bp.main"))
             )
         else:
-            flash("Incorrect password.", "danger")
             db.session.commit()
+            flash("Incorrect password.", "danger")
             return redirect(url_for("auth_bp.login"))
 
     return render_template("login.html", form=form)
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
+@login_required
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():

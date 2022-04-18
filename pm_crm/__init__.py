@@ -9,6 +9,7 @@ from flask_uploads import UploadSet, configure_uploads
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
+login_manager.login_view = "auth.login"
 datafiles = UploadSet("datafiles", extensions=["xls"])
 
 
@@ -35,6 +36,7 @@ def init_db():
     # db.create_all()
     if Access.query.get(1) == None:
         populate_db()
+        db.session.commit()
 
 
 def create_app():
@@ -46,17 +48,16 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
-    login_manager.login_view = "auth.login"
     configure_uploads(app, datafiles)
 
     with app.app_context():
         # Include our Routes
-        from . import routes
-        from .main import routes as main
-        from .auth import routes as auth
-        from .data import routes as data
-        from .relationship import routes as relationship
-        from .reports import routes as reports
+        from pm_crm.errors.routes import error_bp
+        from pm_crm.main.routes import main_bp
+        from pm_crm.auth.routes import auth_bp
+        from pm_crm.data.routes import data_bp
+        from pm_crm.relationship.routes import rel_bp
+        from pm_crm.reports.routes import reports_bp
 
         # Import template_filters
         from .modules import custom_template_filters
@@ -65,10 +66,11 @@ def create_app():
         # init_db()
 
         # Register Blueprints
-        app.register_blueprint(main.main_bp)
-        app.register_blueprint(auth.auth_bp)
-        app.register_blueprint(data.data_bp)
-        app.register_blueprint(relationship.rel_bp)
-        app.register_blueprint(reports.reports_bp)
+        app.register_blueprint(error_bp)
+        app.register_blueprint(main_bp)
+        app.register_blueprint(auth_bp)
+        app.register_blueprint(data_bp)
+        app.register_blueprint(rel_bp)
+        app.register_blueprint(reports_bp)
 
         return app

@@ -1,6 +1,7 @@
-from . import db
+from flask import flash, redirect, url_for
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from . import db, login_manager
 
 MONTHS = [
     "January",
@@ -20,6 +21,18 @@ MONTHS = [
 ACCESS_TYPE = ["admin", "SFO", "PM", "IA"]
 
 INVESTMENT_RESPONSIBILITY = ["Sole", "Shared"]
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id.lower())
+
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    """Redirect unauthorized users to Login page"""
+    flash("You must be logged in to view that page.", "danger")
+    return redirect(url_for("auth_bp.login"))
 
 
 class User(db.Model, UserMixin):
@@ -44,6 +57,9 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+    def __repr__(self):
+        return f"User('{self.name}', {self.officer_code})"
+
 
 class Relationship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -58,6 +74,9 @@ class Relationship(db.Model):
     calls = db.relationship("Call", backref="relationship", lazy=True)
     meetings = db.relationship("Meeting", backref="relationship", lazy=True)
 
+    def __repr__(self):
+        return f"Relationship('{self.name}', {self.market_value})"
+
 
 class Call(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -66,6 +85,9 @@ class Call(db.Model):
     )
     who_updated = db.Column(db.String(5), db.ForeignKey("user.id"), nullable=False)
     date_updated = db.Column(db.DateTime, nullable=False)
+
+    def __repr__(self):
+        return f""
 
 
 class Meeting(db.Model):
@@ -76,6 +98,9 @@ class Meeting(db.Model):
     who_updated = db.Column(db.String(5), db.ForeignKey("user.id"), nullable=False)
     date_updated = db.Column(db.DateTime, nullable=False)
 
+    def __repr__(self):
+        return f""
+
 
 class SLACall(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -83,12 +108,18 @@ class SLACall(db.Model):
     month = db.Column(db.Integer, db.ForeignKey("month.id"), default=1)
     relationship_id = db.relationship("Relationship", backref="sla_call", lazy=True)
 
+    def __repr__(self):
+        return f""
+
 
 class SLAMeeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     per_year = db.Column(db.Integer, nullable=False)
     month = db.Column(db.Integer, db.ForeignKey("month.id"), default=1)
     relationship_id = db.relationship("Relationship", backref="sla_meeting", lazy=True)
+
+    def __repr__(self):
+        return f""
 
 
 class LMAAccount(db.Model):
@@ -108,6 +139,9 @@ class LMAAccount(db.Model):
     sma = db.relationship("SMAAccount", backref="lma", lazy=True)
     relationship_id = db.Column(db.Integer, db.ForeignKey("relationship.id"))
 
+    def __repr__(self):
+        return f"LMAAccount('{self.accountnumber}', '{self.account_name}', {self.market_value})"
+
 
 class SMAAccount(db.Model):
     accountnumber = db.Column(db.Integer, primary_key=True)
@@ -125,6 +159,9 @@ class SMAAccount(db.Model):
     )
     lma_account = db.Column(db.Integer, db.ForeignKey("lma_account.accountnumber"))
 
+    def __repr__(self):
+        return f"SMAAccount('{self.accountnumber}', '{self.account_name}', {self.market_value})"
+
 
 class UpdateAccount(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -133,12 +170,18 @@ class UpdateAccount(db.Model):
     lma_accounts = db.relationship("LMAAccount", backref="lma_update", lazy=True)
     sma_accounts = db.relationship("SMAAccount", backref="sma_update", lazy=True)
 
+    def __repr__(self):
+        return f""
+
 
 class InvResp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     inv_resp_type = db.Column(db.String(6), unique=True, nullable=False)
     lma_accounts = db.relationship("LMAAccount", backref="invresp", lazy=True)
     sma_accounts = db.relationship("SMAAccount", backref="invresp", lazy=True)
+
+    def __repr__(self):
+        return f"InvResp('{self.inv_resp_type}')"
 
 
 class TAOfficer(db.Model):
@@ -147,11 +190,17 @@ class TAOfficer(db.Model):
     lma_accounts = db.relationship("LMAAccount", backref="taofficer", lazy=True)
     sma_accounts = db.relationship("SMAAccount", backref="taofficer", lazy=True)
 
+    def __repr__(self):
+        return f"TAOfficer('{self.code}', {self.name})"
+
 
 class Access(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     access_type = db.Column(db.String(5), unique=True, nullable=False)
     users = db.relationship("User", backref="access", lazy=True)
+
+    def __repr__(self):
+        return f"Access('{self.access_type}')"
 
 
 class Month(db.Model):
@@ -160,26 +209,26 @@ class Month(db.Model):
     call_sla = db.relationship("SLACall", backref="call_month", lazy=True)
     meeting_sla = db.relationship("SLAMeeting", backref="meeting_month", lazy=True)
 
+    def __repr__(self):
+        return f"Month('{self.month_name}')"
+
 
 def add_access_types():
     for access in ACCESS_TYPE:
         new = Access(access_type=access)
         db.session.add(new)
-    db.session.commit()
 
 
 def add_ir():
     for ir in INVESTMENT_RESPONSIBILITY:
         new = InvResp(inv_resp_type=ir)
         db.session.add(new)
-    db.session.commit()
 
 
 def add_months():
     for month in MONTHS:
         new = Month(month_name=month)
         db.session.add(new)
-    db.session.commit()
 
 
 def add_sla():
@@ -187,7 +236,6 @@ def add_sla():
     new_sla_meeting = SLAMeeting(per_year=0, month=1)
     db.session.add(new_sla_call)
     db.session.add(new_sla_meeting)
-    db.session.commit()
 
 
 def populate_db():

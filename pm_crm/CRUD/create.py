@@ -23,17 +23,17 @@ def new_update_account_entry(user_id, file_date):
     db.session.commit()
 
 
-def new_lma_from_sma(sma):
-    new_lma = LMAAccount(
-        accountnumber=sma.accountnumber,
-        account_name=sma.account_name,
-        trust_advisor=sma.trust_advisor,
-        portfolio_manager=sma.portfolio_manager,
-        market_value=sma.market_value,
-        invest_resp=sma.invest_resp,
-        update_id=sma.update_id,
-    )
-    db.session.add(new_lma)
+# def new_lma_from_sma(sma):
+#     new_lma = LMAAccount(
+#         accountnumber=sma.accountnumber,
+#         account_name=sma.account_name,
+#         trust_advisor=sma.trust_advisor,
+#         portfolio_manager=sma.portfolio_manager,
+#         market_value=sma.market_value,
+#         invest_resp=sma.invest_resp,
+#         update_id=sma.update_id,
+#     )
+#     db.session.add(new_lma)
 
 
 def new_meeting_sla(year, month):
