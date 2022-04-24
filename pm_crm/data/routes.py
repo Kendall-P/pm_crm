@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from flask_uploads import UploadNotAllowed
 from werkzeug.exceptions import BadRequestKeyError
-from pm_crm.models import db
+from pm_crm import datafiles, db
 from pm_crm.utils import clear_flashes
 from pm_crm.data.forms import (
     FileUploadForm,
@@ -10,8 +10,7 @@ from pm_crm.data.forms import (
     RelationshipFilterForm,
     NewRelationshipForm,
 )
-from pm_crm.data.CRUD import actions, create
-from .. import datafiles
+from pm_crm.data.CRUD import actions, create, update
 
 
 # Blueprint Configuration
@@ -44,9 +43,10 @@ def update_data():
             elif request.form["action"] == "link":
                 selected_smas = request.form.getlist("sma_account")
                 selected_lma = request.form.get("lma_account")
-                actions.link_to_lma(selected_smas, selected_lma)
-                db.session.commit()
-                flash("SMA linked to LMA", "success")
+                if selected_smas and selected_lma:
+                    actions.link_to_lma(selected_smas, selected_lma)
+                    db.session.commit()
+                    flash("SMA linked to LMA", "success")
             elif request.form["action"] == "filter":
                 lma_filter_form.validate()
                 name = lma_filter_form.account_name.data.upper()
@@ -65,10 +65,45 @@ def update_data():
                 flash("Not an approved file type.", "danger")
                 return redirect(url_for("data_bp.update_data"))
             # DO STUFF TO FILE
-            # actions.prepare_file(uploaded_file)
+            data = actions.convert_file_to_df(uploaded_file)
+            if data is None:
+                actions.file_upload_delete(uploaded_file)
+                return redirect(url_for("data_bp.update_data"))
+            pm_userid = actions.get_pm_userid(data)
+            if pm_userid is None:
+                actions.file_upload_delete(uploaded_file)
+                return redirect(url_for("data_bp.update_data"))
+            file_date = actions.get_file_date(data)
+            data = actions.df_cleanup(data)
+            update_ta = actions.check_db_ta(data)
+            if update_ta:
+                db.session.commit()
+            update_account_id = actions.get_update_id(file_date)
+            if update_account_id is None:
+                create.new_update_account_entry(current_user.id, file_date)
+                db.session.commit()
+                update_account_id = actions.get_update_id(file_date)
+            data = actions.df_add_update_id(data, update_account_id)
+            off_code = actions.get_off_code(pm_userid)
+            data = actions.remove_nfp_smas(data, off_code)
+            update_sma = actions.update_smas(
+                data, off_code, pm_userid, file_date, update_account_id
+            )
+            db.session.commit()
+            if len(update_sma) > 0:
+                update.data_frame_to_sql("sma", update_sma)
+            update_lma = actions.update_lmas(
+                data, off_code, pm_userid, file_date, update_account_id
+            )
+            db.session.commit()
+            if len(update_lma) > 0:
+                update.data_frame_to_sql("lma", update_lma)
+            actions.update_rel_mv(pm_userid)
+            db.session.commit()
+            flash("Database updated.", "success")
 
             #  Delete uploaded file
-            # actions.file_upload_delete(uploaded_file)
+            actions.file_upload_delete(uploaded_file)
             return redirect(url_for("data_bp.update_data"))
 
     return render_template(
@@ -119,7 +154,12 @@ def link_accounts():
                 selected_rel = request.form.get("relationship")
                 session["lma_filter"] = ""
                 session["rel_filter"] = ""
-                # actions.link_to_rel(selected_lmas, selected_rel)
+                if selected_lmas and selected_rel:
+                    actions.link_to_rel(selected_lmas, selected_rel)
+                    db.session.commit()
+                    update.update_relationship_mv(selected_rel)
+                    db.session.commit()
+                    flash("Account linked to Relationship", "success")
             return redirect(url_for("data_bp.link_accounts"))
 
     except BadRequestKeyError:

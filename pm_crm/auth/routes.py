@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, logout_user, current_user
-from pm_crm.models import db
+from pm_crm import db
 from pm_crm.auth.forms import LoginForm, RegistrationForm
 from pm_crm.auth.CRUD import actions, create, update
 
@@ -11,6 +11,8 @@ auth_bp = Blueprint(
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("main_bp.main"))
     form = LoginForm()
     if form.validate_on_submit():
         user = actions.login(form.user_id.data, form.password.data)
