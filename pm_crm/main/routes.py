@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, session, request
-from flask_login import login_required
+from flask_login import login_required, current_user
 from werkzeug.exceptions import BadRequestKeyError
 from pm_crm.CRUD import actions, create
 
@@ -20,9 +20,11 @@ def home():
 @login_required
 def main():
     if "rel_sort" in session:
-        relationships = actions.load_relationships(filter="", sort=session["rel_sort"])
+        relationships = current_user.load_relationships(
+            filter="", sort=session["rel_sort"]
+        )
     else:
-        relationships = actions.load_relationships(filter="", sort="mv")
+        relationships = current_user.load_relationships(filter="", sort="mv")
 
     if relationships:
         m_slas = {relationship.meeting_sla for relationship in relationships}

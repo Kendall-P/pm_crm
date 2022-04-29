@@ -14,12 +14,12 @@ rel_bp = Blueprint(
 @login_required
 def relationship(name):
     rename_form = NewRelationshipForm()
-    rel = actions.load_relationship(name)
-    meeting_sla = actions.load_meeting_sla(rel.meeting_sla)
-    call_sla = actions.load_call_sla(rel.call_sla)
+    rel = current_user.load_relationship(name)
+    meeting_sla = rel.load_meeting_sla()
+    call_sla = rel.load_call_sla()
     months = actions.load_months()
-    calls = actions.load_calls(rel.id)
-    meetings = actions.load_meetings(rel.id)
+    calls = rel.load_calls()
+    meetings = rel.load_meetings()
 
     try:
         if request.method == "POST":

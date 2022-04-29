@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div class="row m-3">
+<div class="row m-3 align-items-end">
     <div class="col-4">
         <form action="{{ url_for('data_bp.update_data') }}" method="POST" enctype="multipart/form-data" novalidate>
 
@@ -25,7 +25,7 @@
         <!-- Categories: success (green), info (blue), warning (yellow), danger (red)-->
         {% if messages %}
         {% for category, message in messages %}
-        <div class="alert alert-{{ category }} text-center border-0 bg-transparent" role="alert">
+        <div class="alert alert-{{ category }} text-center border-0 mb-0 pb-0 pt-0 bg-transparent" role="alert">
             {{ message }}
         </div>
         {% endfor %}

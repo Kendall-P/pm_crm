@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div class="row mt-3 justify-content-end">
+<div class="row mt-3 justify-content-end align-items-end">
     <div class="col-4">
         {% for err in form.name.errors: %}
         <div class="alert alert-danger text-center border-0 bg-transparent" role="alert">
@@ -14,7 +14,7 @@
         <!-- Categories: success (green), info (blue), warning (yellow), danger (red)-->
         {% if messages %}
         {% for category, message in messages %}
-        <div class="alert alert-{{ category }} text-center border-0 bg-transparent" role="alert">
+        <div class="alert alert-{{ category }} text-center mb-0 pb-0 pt-0 border-0 bg-transparent" role="alert">
             {{ message }}
         </div>
         {% endfor %}
@@ -22,7 +22,7 @@
         {% endwith %}
     </div>
     <div class="col-4">
-        <form action="{{ url_for('data_bp.link_accounts') }}" method="POST" novalidate>
+        <form action="{{ url_for('data_bp.link_accounts') }}" method="POST">
 
             {{ form.csrf_token }}
 

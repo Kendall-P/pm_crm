@@ -57,6 +57,72 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+    def load_smas(self):
+        smas = (
+            SMAAccount.query.filter_by(portfolio_manager=self.id, lma_account=None)
+            .order_by(SMAAccount.account_name)
+            .all()
+        )
+        if smas:
+            return smas
+
+    def load_lmas(self, filter="", rel_data=False):
+        if filter != "":
+            query = (
+                LMAAccount.query.filter_by(portfolio_manager=self.id)
+                .filter(LMAAccount.account_name.contains(filter))
+                .order_by(LMAAccount.account_name)
+            )
+            if rel_data:
+                query = query.filter_by(relationship_id=None)
+            lmas = query.all()
+            if len(lmas) == 0:
+                flash("No accounts by that filter", "danger")
+        if filter == "" or len(lmas) == 0:
+            query = LMAAccount.query.filter_by(portfolio_manager=self.id).order_by(
+                LMAAccount.account_name
+            )
+            if rel_data:
+                query = query.filter_by(relationship_id=None)
+            lmas = query.all()
+        if lmas:
+            return lmas
+
+    def load_relationships(self, filter="", sort="name"):
+        rels = [
+            None,
+        ]
+        if filter != "":
+            rels = (
+                Relationship.query.filter_by(portfolio_manager=self.id)
+                .filter(Relationship.name.contains(filter))
+                .order_by(Relationship.name)
+                .all()
+            )
+        if len(rels) == 0:
+            flash("No relationships by that name", "danger")
+        if filter == "" or len(rels) == 0:
+            if sort == "name":
+                rels = (
+                    Relationship.query.filter_by(portfolio_manager=self.id)
+                    .order_by(Relationship.name)
+                    .all()
+                )
+            elif sort == "mv":
+                rels = (
+                    Relationship.query.filter_by(portfolio_manager=self.id)
+                    .order_by(Relationship.market_value.desc())
+                    .all()
+                )
+        if rels:
+            return rels
+
+    def load_relationship(self, name):
+        relationship = Relationship.query.filter_by(
+            portfolio_manager=self.id, name=name
+        ).first()
+        return relationship
+
     def __repr__(self):
         return f"User('{self.name}', {self.officer_code})"
 
@@ -73,6 +139,26 @@ class Relationship(db.Model):
     meeting_sla = db.Column(db.Integer, db.ForeignKey("sla_meeting.id"), default=1)
     calls = db.relationship("Call", backref="relationship", lazy=True)
     meetings = db.relationship("Meeting", backref="relationship", lazy=True)
+
+    def load_meeting_sla(self):
+        return SLAMeeting.query.filter_by(id=self.meeting_sla).first()
+
+    def load_call_sla(self):
+        return SLACall.query.filter_by(id=self.call_sla).first()
+
+    def load_meetings(self):
+        return (
+            Meeting.query.filter_by(relationship_id=self.id)
+            .order_by(Meeting.date_updated.desc())
+            .all()
+        )
+
+    def load_calls(self):
+        return (
+            Call.query.filter_by(relationship_id=self.id)
+            .order_by(Call.date_updated.desc())
+            .all()
+        )
 
     def __repr__(self):
         return f"Relationship('{self.name}', {self.market_value})"

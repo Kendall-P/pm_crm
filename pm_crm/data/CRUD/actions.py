@@ -24,59 +24,6 @@ from .update import (
 )
 
 
-def load_smas():
-    smas = (
-        SMAAccount.query.filter_by(portfolio_manager=current_user.id, lma_account=None)
-        .order_by(SMAAccount.account_name)
-        .all()
-    )
-    if smas:
-        return smas
-
-
-def load_lmas(filter="", rel_data=False):
-    if filter != "":
-        query = (
-            LMAAccount.query.filter_by(portfolio_manager=current_user.id)
-            .filter(LMAAccount.account_name.contains(filter))
-            .order_by(LMAAccount.account_name)
-        )
-        if rel_data:
-            query = query.filter_by(relationship_id=None)
-        lmas = query.all()
-        if len(lmas) == 0:
-            flash("No accounts by that filter", "danger")
-    if filter == "" or len(lmas) == 0:
-        query = LMAAccount.query.filter_by(portfolio_manager=current_user.id).order_by(
-            LMAAccount.account_name
-        )
-        if rel_data:
-            query = query.filter_by(relationship_id=None)
-        lmas = query.all()
-    if lmas:
-        return lmas
-
-
-def load_relationships(filter=""):
-    if filter != "":
-        relationships = (
-            Relationship.query.filter_by(portfolio_manager=current_user.id)
-            .filter(Relationship.name.contains(filter))
-            .order_by(Relationship.name)
-            .all()
-        )
-        if len(relationships) == 0:
-            flash("No relationships by that filter", "danger")
-    if filter == "" or len(relationships) == 0:
-        relationships = (
-            Relationship.query.filter_by(portfolio_manager=current_user.id)
-            .order_by(Relationship.name)
-            .all()
-        )
-    if relationships:
-        return relationships
-
-
 def convert_to_lma(selected_smas):
     # smas = SMAAccount.query.filter(SMAAccount.accountnumber.in_(selected_smas)).all()
     for sma in selected_smas:

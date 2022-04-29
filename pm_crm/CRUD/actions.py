@@ -1,4 +1,4 @@
-from flask import flash, session
+from flask import session
 from flask_login import current_user
 from datetime import date
 from ..models import (
@@ -6,8 +6,6 @@ from ..models import (
     Relationship,
     SLACall,
     SLAMeeting,
-    Meeting,
-    Call,
 )
 
 
@@ -18,56 +16,9 @@ def clear_flashes():
         pass
 
 
-def load_relationships(filter="", sort="name"):
-    if filter != "":
-        relationships = (
-            Relationship.query.filter_by(portfolio_manager=current_user.id)
-            .filter(Relationship.name.contains(filter))
-            .order_by(Relationship.name)
-            .all()
-        )
-        if len(relationships) == 0:
-            flash("No relationships by that filter", "danger")
-    if filter == "" or len(relationships) == 0:
-        if sort == "name":
-            relationships = (
-                Relationship.query.filter_by(portfolio_manager=current_user.id)
-                .order_by(Relationship.name)
-                .all()
-            )
-        elif sort == "mv":
-            relationships = (
-                Relationship.query.filter_by(portfolio_manager=current_user.id)
-                .order_by(Relationship.market_value.desc())
-                .all()
-            )
-    if relationships:
-        return relationships
-    else:
-        # flash("Relationships load did not work", "danger")
-        pass
-
-
 def load_months():
     months = Month.query.all()
     return months
-
-
-def load_relationship(name):
-    relationship = Relationship.query.filter_by(
-        portfolio_manager=current_user.id, name=name
-    ).first()
-    return relationship
-
-
-def load_meeting_sla(rel_id):
-    meeting_sla = SLAMeeting.query.filter_by(id=rel_id).first()
-    return meeting_sla
-
-
-def load_call_sla(rel_id):
-    call_sla = SLACall.query.filter_by(id=rel_id).first()
-    return call_sla
 
 
 def month_values(cm, num_meetings):
@@ -161,24 +112,6 @@ def load_rels_with_calls(call_slas):
                 relationships.remove(rel)
 
     return relationships
-
-
-def load_meetings(rel_id):
-    meetings = (
-        Meeting.query.filter_by(relationship_id=rel_id)
-        .order_by(Meeting.date_updated.desc())
-        .all()
-    )
-    return meetings
-
-
-def load_calls(rel_id):
-    calls = (
-        Call.query.filter_by(relationship_id=rel_id)
-        .order_by(Call.date_updated.desc())
-        .all()
-    )
-    return calls
 
 
 def confirm_valid_month(per_year, month):

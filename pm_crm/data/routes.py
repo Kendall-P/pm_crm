@@ -1,8 +1,10 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_required, current_user
 from flask_uploads import UploadNotAllowed
+from wtforms.validators import ValidationError
 from werkzeug.exceptions import BadRequestKeyError
 from pm_crm import datafiles, db
+from pm_crm.models import Relationship
 from pm_crm.utils import clear_flashes
 from pm_crm.data.forms import (
     FileUploadForm,
@@ -26,11 +28,11 @@ def update_data():
     file_form = FileUploadForm()
 
     if request.method == "GET":
-        smas = actions.load_smas()
+        smas = current_user.load_smas()
         if "lma_filter" in session:
-            lmas = actions.load_lmas(filter=session["lma_filter"])
+            lmas = current_user.load_lmas(filter=session["lma_filter"])
         else:
-            lmas = actions.load_lmas(filter="")
+            lmas = current_user.load_lmas(filter="")
 
     try:
         if request.method == "POST":
@@ -124,13 +126,15 @@ def link_accounts():
 
     if request.method == "GET":
         if "lma_filter" in session:
-            lmas = actions.load_lmas(filter=session["lma_filter"], rel_data=True)
+            lmas = current_user.load_lmas(filter=session["lma_filter"], rel_data=True)
         else:
-            lmas = actions.load_lmas(filter="", rel_data=True)
+            lmas = current_user.load_lmas(filter="", rel_data=True)
         if "rel_filter" in session:
-            relationships = actions.load_relationships(filter=session["rel_filter"])
+            relationships = current_user.load_relationships(
+                filter=session["rel_filter"]
+            )
         else:
-            relationships = actions.load_relationships(filter="")
+            relationships = current_user.load_relationships(filter="")
 
     try:
         if request.method == "POST":
