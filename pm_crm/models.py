@@ -188,24 +188,75 @@ class Meeting(db.Model):
         return f""
 
 
+cmonths = db.Table(
+    "cmonths",
+    db.Column(
+        "call_month_id", db.Integer, db.ForeignKey("call_month.id"), primary_key=True
+    ),
+    db.Column(
+        "sla_call_id", db.Integer, db.ForeignKey("sla_call.id"), primary_key=True
+    ),
+)
+
+
 class SLACall(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     per_year = db.Column(db.Integer, nullable=False)
-    month = db.Column(db.Integer, db.ForeignKey("month.id"), default=1)
+    months = db.relationship(
+        "CallMonth",
+        secondary=cmonths,
+        lazy="subquery",
+        backref=db.backref("sla_calls", lazy=True),
+    )
     relationship_id = db.relationship("Relationship", backref="sla_call", lazy=True)
 
     def __repr__(self):
         return f""
 
 
+class CallMonth(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    month_name = db.Column(db.String(9), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"Month('{self.month_name}')"
+
+
+mmonths = db.Table(
+    "mmonths",
+    db.Column(
+        "meeting_month_id",
+        db.Integer,
+        db.ForeignKey("meeting_month.id"),
+        primary_key=True,
+    ),
+    db.Column(
+        "sla_meeting_id", db.Integer, db.ForeignKey("sla_meeting.id"), primary_key=True
+    ),
+)
+
+
 class SLAMeeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     per_year = db.Column(db.Integer, nullable=False)
-    month = db.Column(db.Integer, db.ForeignKey("month.id"), default=1)
+    months = db.relationship(
+        "MeetingMonth",
+        secondary=mmonths,
+        lazy="subquery",
+        backref=db.backref("sla_meetings", lazy=True),
+    )
     relationship_id = db.relationship("Relationship", backref="sla_meeting", lazy=True)
 
     def __repr__(self):
         return f""
+
+
+class MeetingMonth(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    month_name = db.Column(db.String(9), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"Month('{self.month_name}')"
 
 
 class LMAAccount(db.Model):
@@ -289,14 +340,14 @@ class Access(db.Model):
         return f"Access('{self.access_type}')"
 
 
-class Month(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    month_name = db.Column(db.String(9), unique=True, nullable=False)
-    call_sla = db.relationship("SLACall", backref="call_month", lazy=True)
-    meeting_sla = db.relationship("SLAMeeting", backref="meeting_month", lazy=True)
+# class Month(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     month_name = db.Column(db.String(9), unique=True, nullable=False)
+#     call_sla = db.relationship("SLACall", backref="call_month", lazy=True)
+#     meeting_sla = db.relationship("SLAMeeting", backref="meeting_month", lazy=True)
 
-    def __repr__(self):
-        return f"Month('{self.month_name}')"
+#     def __repr__(self):
+#         return f"Month('{self.month_name}')"
 
 
 def add_access_types():
@@ -313,13 +364,15 @@ def add_ir():
 
 def add_months():
     for month in MONTHS:
-        new = Month(month_name=month)
-        db.session.add(new)
+        new_call = CallMonth(month_name=month)
+        new_meet = MeetingMonth(month_name=month)
+        db.session.add(new_call)
+        db.session.add(new_meet)
 
 
 def add_sla():
-    new_sla_call = SLACall(per_year=0, month=1)
-    new_sla_meeting = SLAMeeting(per_year=0, month=1)
+    new_sla_call = SLACall(per_year=0)
+    new_sla_meeting = SLAMeeting(per_year=0)
     db.session.add(new_sla_call)
     db.session.add(new_sla_meeting)
 
@@ -329,3 +382,15 @@ def populate_db():
     add_ir()
     add_months()
     add_sla()
+
+
+def link_slas():
+    call_sla = SLACall.query.get(1)
+    meeting_sla = SLAMeeting.query.get(1)
+    c_month = CallMonth.query.get(1)
+    m_month = MeetingMonth.query.get(1)
+    print(call_sla.months)
+    if len(call_sla.months) == 0:
+        call_sla.months.append(c_month)
+    if len(meeting_sla.months) == 0:
+        meeting_sla.months.append(m_month)

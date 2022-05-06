@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, session, request
 from flask_login import login_required, current_user
 from werkzeug.exceptions import BadRequestKeyError
+from pm_crm.utils import clear_flashes
 from pm_crm.CRUD import actions, create
 
 
@@ -35,12 +36,12 @@ def main():
             meeting_sla.id: meeting_sla.per_year for meeting_sla in meeting_slas
         }
         call_peryear = {call_sla.id: call_sla.per_year for call_sla in call_slas}
-        rels_meetings = actions.load_rels_with_meetings(meeting_slas)
-        rels_calls = actions.load_rels_with_calls(call_slas)
+        # rels_meetings = actions.load_rels_with_meetings(meeting_slas)
+        # rels_calls = actions.load_rels_with_calls(call_slas)
 
         try:
             if request.method == "POST":
-                actions.clear_flashes()
+                clear_flashes()
                 if request.form["action"] == "sort_name":
                     session["rel_sort"] = "name"
                     return redirect(url_for("main_bp.main"))
@@ -62,8 +63,8 @@ def main():
             relationships=relationships,
             meet_peryear=meet_peryear,
             call_peryear=call_peryear,
-            rels_meetings=rels_meetings,
-            rels_calls=rels_calls,
+            # rels_meetings=rels_meetings,
+            # rels_calls=rels_calls,
         )
     return render_template(
         "main.html",

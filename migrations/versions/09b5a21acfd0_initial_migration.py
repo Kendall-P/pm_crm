@@ -1,8 +1,8 @@
 """Initial migration.
 
-Revision ID: d5d719bb80a4
+Revision ID: 09b5a21acfd0
 Revises: 
-Create Date: 2022-04-07 21:17:28.843597
+Create Date: 2022-05-05 20:59:10.504077
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'd5d719bb80a4'
+revision = '09b5a21acfd0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,17 +24,33 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('access_type')
     )
+    op.create_table('call_month',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('month_name', sa.String(length=9), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('month_name')
+    )
     op.create_table('inv_resp',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('inv_resp_type', sa.String(length=6), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('inv_resp_type')
     )
-    op.create_table('month',
+    op.create_table('meeting_month',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('month_name', sa.String(length=9), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('month_name')
+    )
+    op.create_table('sla_call',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('per_year', sa.Integer(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('sla_meeting',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('per_year', sa.Integer(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('ta_officer',
     sa.Column('code', sa.String(length=3), nullable=False),
@@ -42,19 +58,19 @@ def upgrade():
     sa.PrimaryKeyConstraint('code'),
     sa.UniqueConstraint('name')
     )
-    op.create_table('sla_call',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('per_year', sa.Integer(), nullable=False),
-    sa.Column('month', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['month'], ['month.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    op.create_table('cmonths',
+    sa.Column('call_month_id', sa.Integer(), nullable=False),
+    sa.Column('sla_call_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['call_month_id'], ['call_month.id'], ),
+    sa.ForeignKeyConstraint(['sla_call_id'], ['sla_call.id'], ),
+    sa.PrimaryKeyConstraint('call_month_id', 'sla_call_id')
     )
-    op.create_table('sla_meeting',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('per_year', sa.Integer(), nullable=False),
-    sa.Column('month', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['month'], ['month.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    op.create_table('mmonths',
+    sa.Column('meeting_month_id', sa.Integer(), nullable=False),
+    sa.Column('sla_meeting_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['meeting_month_id'], ['meeting_month.id'], ),
+    sa.ForeignKeyConstraint(['sla_meeting_id'], ['sla_meeting.id'], ),
+    sa.PrimaryKeyConstraint('meeting_month_id', 'sla_meeting_id')
     )
     op.create_table('user',
     sa.Column('id', sa.String(length=5), nullable=False),
@@ -150,10 +166,13 @@ def downgrade():
     op.drop_table('update_account')
     op.drop_table('relationship')
     op.drop_table('user')
+    op.drop_table('mmonths')
+    op.drop_table('cmonths')
+    op.drop_table('ta_officer')
     op.drop_table('sla_meeting')
     op.drop_table('sla_call')
-    op.drop_table('ta_officer')
-    op.drop_table('month')
+    op.drop_table('meeting_month')
     op.drop_table('inv_resp')
+    op.drop_table('call_month')
     op.drop_table('access')
     # ### end Alembic commands ###

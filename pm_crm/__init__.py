@@ -28,14 +28,18 @@ def init_db():
         InvResp,
         TAOfficer,
         Access,
-        Month,
+        CallMonth,
+        MeetingMonth,
         populate_db,
+        link_slas,
     )
 
     # db.drop_all()
     # db.create_all()
     if Access.query.get(1) == None:
         populate_db()
+        db.session.commit()
+        link_slas()
         db.session.commit()
 
 
@@ -52,7 +56,7 @@ def create_app():
 
     with app.app_context():
         # Include our Routes
-        from pm_crm.errors.routes import error_bp
+        from pm_crm.errors.handlers import error_bp
         from pm_crm.main.routes import main_bp
         from pm_crm.auth.routes import auth_bp
         from pm_crm.data.routes import data_bp

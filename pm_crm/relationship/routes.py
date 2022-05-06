@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from werkzeug.exceptions import BadRequestKeyError
 from pm_crm.forms import NewRelationshipForm
+from pm_crm.utils import clear_flashes
 from pm_crm.CRUD import actions, update
 
 # Blueprint Configuration
@@ -17,13 +18,13 @@ def relationship(name):
     rel = current_user.load_relationship(name)
     meeting_sla = rel.load_meeting_sla()
     call_sla = rel.load_call_sla()
-    months = actions.load_months()
+    # months = actions.load_months()
     calls = rel.load_calls()
     meetings = rel.load_meetings()
 
     try:
         if request.method == "POST":
-            actions.clear_flashes()
+            clear_flashes()
             if request.form["action"] == "update_sla":
 
                 m_year = int(request.form.get("meeting_year") or 0)
@@ -61,7 +62,7 @@ def relationship(name):
         rel=rel,
         meeting_sla=meeting_sla,
         call_sla=call_sla,
-        months=months,
+        # months=months,
         meetings=meetings,
         calls=calls,
     )

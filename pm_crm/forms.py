@@ -2,11 +2,12 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from flask_wtf.file import FileField, FileRequired
 from wtforms.validators import DataRequired, Length
-from .models import Month
+
+# from .models import Month
 
 
-def month_choices():
-    return Month.query
+# def month_choices():
+#     return Month.query
 
 
 class NewRelationshipForm(FlaskForm):

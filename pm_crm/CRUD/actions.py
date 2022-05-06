@@ -2,23 +2,22 @@ from flask import session
 from flask_login import current_user
 from datetime import date
 from ..models import (
-    Month,
     Relationship,
     SLACall,
     SLAMeeting,
 )
 
 
-def clear_flashes():
-    try:
-        session["_flashes"].clear()
-    except KeyError:
-        pass
+# def clear_flashes():
+#     try:
+#         session["_flashes"].clear()
+#     except KeyError:
+#         pass
 
 
-def load_months():
-    months = Month.query.all()
-    return months
+# def load_months():
+#     months = Month.query.all()
+#     return months
 
 
 def month_values(cm, num_meetings):
