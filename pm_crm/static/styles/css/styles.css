@@ -31,3 +31,18 @@ a {
     width: 227.2px;
     height: 30px;
 }
+
+.my-multi-select {
+    align-items: center;
+    cursor: default;
+    inline-size: 142px;
+    min-block-size: 0px;
+    min-height: 0px;
+    min-inline-size: 0px;
+    min-width: 0px;
+    perspective-origin: 71px 15.5px;
+    text-align: start;
+    transform-origin: 71px 15.5px;
+    white-space: pre;
+    width: 142px;
+}

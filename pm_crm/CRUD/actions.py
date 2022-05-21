@@ -15,11 +15,6 @@ from ..models import (
 #         pass
 
 
-# def load_months():
-#     months = Month.query.all()
-#     return months
-
-
 def month_values(cm, num_meetings):
     valid_months = [x for x in range(1, 13)]
     meetings = [x for x in range(1, num_meetings)]

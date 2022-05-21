@@ -211,7 +211,7 @@ class SLACall(db.Model):
     relationship_id = db.relationship("Relationship", backref="sla_call", lazy=True)
 
     def __repr__(self):
-        return f""
+        return f"Per Year: {self.per_year} - Months: {self.months}"
 
 
 class CallMonth(db.Model):
@@ -219,7 +219,7 @@ class CallMonth(db.Model):
     month_name = db.Column(db.String(9), unique=True, nullable=False)
 
     def __repr__(self):
-        return f"Month('{self.month_name}')"
+        return f"{self.id}"
 
 
 mmonths = db.Table(
@@ -248,7 +248,7 @@ class SLAMeeting(db.Model):
     relationship_id = db.relationship("Relationship", backref="sla_meeting", lazy=True)
 
     def __repr__(self):
-        return f""
+        return f"Per Year: {self.per_year} - Months: {self.months}"
 
 
 class MeetingMonth(db.Model):
@@ -371,10 +371,11 @@ def add_months():
 
 
 def add_sla():
-    new_sla_call = SLACall(per_year=0)
-    new_sla_meeting = SLAMeeting(per_year=0)
-    db.session.add(new_sla_call)
-    db.session.add(new_sla_meeting)
+    for n in range(13):
+        new_sla_call = SLACall(per_year=n)
+        new_sla_meeting = SLAMeeting(per_year=n)
+        db.session.add(new_sla_call)
+        db.session.add(new_sla_meeting)
 
 
 def populate_db():
@@ -384,13 +385,13 @@ def populate_db():
     add_sla()
 
 
-def link_slas():
-    call_sla = SLACall.query.get(1)
-    meeting_sla = SLAMeeting.query.get(1)
-    c_month = CallMonth.query.get(1)
-    m_month = MeetingMonth.query.get(1)
-    print(call_sla.months)
-    if len(call_sla.months) == 0:
-        call_sla.months.append(c_month)
-    if len(meeting_sla.months) == 0:
-        meeting_sla.months.append(m_month)
+# def link_slas():
+#     call_sla = SLACall.query.get(1)
+#     meeting_sla = SLAMeeting.query.get(1)
+#     c_month = CallMonth.query.get(1)
+#     m_month = MeetingMonth.query.get(1)
+#     print(call_sla.months)
+#     if len(call_sla.months) == 0:
+#         call_sla.months.append(c_month)
+#     if len(meeting_sla.months) == 0:
+#         meeting_sla.months.append(m_month)

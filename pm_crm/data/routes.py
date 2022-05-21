@@ -1,10 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_required, current_user
 from flask_uploads import UploadNotAllowed
-from wtforms.validators import ValidationError
 from werkzeug.exceptions import BadRequestKeyError
 from pm_crm import datafiles, db
-from pm_crm.models import Relationship
 from pm_crm.utils import clear_flashes
 from pm_crm.data.forms import (
     FileUploadForm,

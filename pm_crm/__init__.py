@@ -39,8 +39,8 @@ def init_db():
     if Access.query.get(1) == None:
         populate_db()
         db.session.commit()
-        link_slas()
-        db.session.commit()
+        # link_slas()
+        # db.session.commit()
 
 
 def create_app():
