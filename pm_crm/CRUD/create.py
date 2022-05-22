@@ -9,18 +9,18 @@ from pm_crm.models import (
 )
 
 
-def new_meeting_sla(year, month):
-    new_m_sla = SLAMeeting(per_year=year, month=month)
-    db.session.add(new_m_sla)
-    db.session.commit()
-    return new_m_sla
+# def new_meeting_sla(year, month):
+#     new_m_sla = SLAMeeting(per_year=year, month=month)
+#     db.session.add(new_m_sla)
+#     db.session.commit()
+#     return new_m_sla
 
 
-def new_call_sla(year, month):
-    new_c_sla = SLACall(per_year=year, month=month)
-    db.session.add(new_c_sla)
-    db.session.commit()
-    return new_c_sla
+# def new_call_sla(year, month):
+#     new_c_sla = SLACall(per_year=year, month=month)
+#     db.session.add(new_c_sla)
+#     db.session.commit()
+#     return new_c_sla
 
 
 def new_meeting(rel_ids):

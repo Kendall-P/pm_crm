@@ -18,10 +18,8 @@ rel_bp = Blueprint(
 def relationship(name):
     rename_form = NewRelationshipForm()
     rel = current_user.load_relationship(name)
-    meeting_sla = rel.load_meeting_sla()
-    meeting_months = [month.id for month in meeting_sla.months]
-    call_sla = rel.load_call_sla()
-    call_months = [month.id for month in call_sla.months]
+    meeting_months = [month.id for month in rel.sla_meeting.months]
+    call_months = [month.id for month in rel.sla_call.months]
     months = actions.load_months()
     calls = rel.load_calls()
     meetings = rel.load_meetings()
@@ -36,45 +34,47 @@ def relationship(name):
                 c_months = [int(x) for x in request.form.getlist("call_month")]
 
                 # Check if form POST of meetings per year is different than the current relationship meetings per year
-                if meeting_sla.per_year != m_year:
+                if rel.sla_meeting.per_year != m_year:
                     actions.change_meeting_sla(rel, m_year)
                     db.session.commit()
                 elif meeting_months != m_months:
-                    if len(m_months) != meeting_sla.per_year:
+                    if len(m_months) != rel.sla_meeting.per_year:
                         flash(
                             "Number of meeting months selected does not match meetings per year.",
                             "danger",
                         )
                     else:
                         new_sla_meeting = actions.get_meeting_sla(
-                            meeting_sla.per_year, m_months
+                            rel.sla_meeting.per_year, m_months
                         )
                         if new_sla_meeting is None:
-                            create.new_sla_meeting(meeting_sla.per_year, m_months)
+                            create.new_sla_meeting(rel.sla_meeting.per_year, m_months)
                             db.session.commit()
                             new_sla_meeting = actions.get_meeting_sla(
-                                meeting_sla.per_year, m_months
+                                rel.sla_meeting.per_year, m_months
                             )
                         update.update_meeting_sla(rel, new_sla_meeting)
                         db.session.commit()
 
                 # Check if form POST of calls per year is different than the current relationship calls per year
-                if call_sla.per_year != c_year:
+                if rel.sla_call.per_year != c_year:
                     actions.change_call_sla(rel, c_year)
                     db.session.commit()
                 elif call_months != c_months:
-                    if len(c_months) != call_sla.per_year:
+                    if len(c_months) != rel.sla_call.per_year:
                         flash(
                             "Number of call months selected does not match calls per year.",
                             "danger",
                         )
                     else:
-                        new_sla_call = actions.get_call_sla(call_sla.per_year, c_months)
+                        new_sla_call = actions.get_call_sla(
+                            rel.sla_call.per_year, c_months
+                        )
                         if new_sla_call is None:
-                            create.new_sla_call(call_sla.per_year, c_months)
+                            create.new_sla_call(rel.sla_call.per_year, c_months)
                             db.session.commit()
                             new_sla_call = actions.get_call_sla(
-                                call_sla.per_year, c_months
+                                rel.sla_call.per_year, c_months
                             )
                         update.update_call_sla(rel, new_sla_call)
                         db.session.commit()
@@ -91,9 +91,7 @@ def relationship(name):
         "relationship.html",
         rename_form=rename_form,
         rel=rel,
-        meeting_sla=meeting_sla,
         meeting_months=meeting_months,
-        call_sla=call_sla,
         call_months=call_months,
         months=months,
         meetings=meetings,

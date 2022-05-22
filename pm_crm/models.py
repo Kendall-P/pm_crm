@@ -140,12 +140,6 @@ class Relationship(db.Model):
     calls = db.relationship("Call", backref="relationship", lazy=True)
     meetings = db.relationship("Meeting", backref="relationship", lazy=True)
 
-    def load_meeting_sla(self):
-        return SLAMeeting.query.filter_by(id=self.meeting_sla).first()
-
-    def load_call_sla(self):
-        return SLACall.query.filter_by(id=self.call_sla).first()
-
     def load_meetings(self):
         return (
             Meeting.query.filter_by(relationship_id=self.id)
@@ -385,13 +379,12 @@ def populate_db():
     add_sla()
 
 
-# def link_slas():
-#     call_sla = SLACall.query.get(1)
-#     meeting_sla = SLAMeeting.query.get(1)
-#     c_month = CallMonth.query.get(1)
-#     m_month = MeetingMonth.query.get(1)
-#     print(call_sla.months)
-#     if len(call_sla.months) == 0:
-#         call_sla.months.append(c_month)
-#     if len(meeting_sla.months) == 0:
-#         meeting_sla.months.append(m_month)
+def twelve_slas():
+    call_sla = SLACall.query.filter_by(per_year=12).first()
+    meeting_sla = SLAMeeting.query.filter_by(per_year=12).first()
+    c_months = CallMonth.query.all()
+    m_months = MeetingMonth.query.all()
+    for month in c_months:
+        call_sla.months.append(month)
+    for month in m_months:
+        meeting_sla.months.append(month)

@@ -68,9 +68,9 @@
                         </td>
                         <td>{{ relationship.market_value | currencyFormat }}</td>
                         <td class="text-center">{{ relationship.meetings | latestDate }}</td>
-                        <td class="text-center">{{ meet_peryear[relationship.meeting_sla] }}</td>
+                        <td class="text-center">{{ relationship.sla_meeting.per_year }}</td>
                         <td class="text-center">{{ relationship.calls | latestDate }}</td>
-                        <td class="text-center">{{ call_peryear[relationship.call_sla] }}</td>
+                        <td class="text-center">{{ relationship.sla_call.per_year }}</td>
                     </tr>
                     {% endfor %}
                     {% endif %}

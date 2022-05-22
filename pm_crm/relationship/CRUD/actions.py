@@ -9,19 +9,27 @@ def load_months():
 
 
 def change_meeting_sla(rel, m_year):
-    meeting_sla = (
-        SLAMeeting.query.filter_by(per_year=m_year)
-        .filter(~SLAMeeting.months.any())
-        .first()
-    )
+    if m_year == 12:
+        meeting_sla = SLAMeeting.query.filter_by(per_year=m_year).first()
+    else:
+        meeting_sla = (
+            SLAMeeting.query.filter_by(per_year=m_year)
+            .filter(~SLAMeeting.months.any())
+            .first()
+        )
     if meeting_sla:
         update_meeting_sla(rel, meeting_sla)
 
 
 def change_call_sla(rel, c_year):
-    call_sla = (
-        SLACall.query.filter_by(per_year=c_year).filter(~SLACall.months.any()).first()
-    )
+    if c_year == 12:
+        call_sla = SLACall.query.filter_by(per_year=c_year).first()
+    else:
+        call_sla = (
+            SLACall.query.filter_by(per_year=c_year)
+            .filter(~SLACall.months.any())
+            .first()
+        )
     if call_sla:
         update_call_sla(rel, call_sla)
 

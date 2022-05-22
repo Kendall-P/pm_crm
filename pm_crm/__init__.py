@@ -31,7 +31,7 @@ def init_db():
         CallMonth,
         MeetingMonth,
         populate_db,
-        link_slas,
+        twelve_slas,
     )
 
     # db.drop_all()
@@ -39,8 +39,11 @@ def init_db():
     if Access.query.get(1) == None:
         populate_db()
         db.session.commit()
-        # link_slas()
-        # db.session.commit()
+
+    twelve_per_year = SLACall.query.filter_by(per_year=12)
+    if len(twelve_per_year.months) != 12:
+        twelve_slas()
+        db.session.commit()
 
 
 def create_app():

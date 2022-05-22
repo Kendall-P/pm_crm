@@ -111,16 +111,16 @@
             <div class="row">
                 <div class="col">
                     <select name="meeting_year" class="form-select form-select-sm">
-                        <option selected>{{ meeting_sla.per_year }}</option>
+                        <option selected>{{ rel.sla_meeting.per_year }}</option>
                         {% for n in range(13) %}
-                        {% if n != meeting_sla.per_year %}
+                        {% if n != rel.sla_meeting.per_year %}
                         <option value="{{ n }}">{{ n }}</option>
                         {% endif %}
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col">
-                    {% if meeting_sla.per_year == 0 %}
+                    {% if rel.sla_meeting.per_year == 0 %}
                     <select name="meeting_month" class="form-select form-select-sm" disabled></select>
                     {% else %}
 
@@ -135,7 +135,7 @@
                     </select>
 
                     <script type="text/javascript">
-                        var callPerYear = {{ meeting_sla.per_year }}
+                        var callPerYear = {{ rel.sla_meeting.per_year }}
                         $(document).ready(function my() {
                             $('#multi-meeting').multiselect({
                                 onDropdownShow: function (event) {
@@ -195,16 +195,16 @@
                 </div>
                 <div class="col">
                     <select name="call_year" class="form-select form-select-sm">
-                        <option selected>{{ call_sla.per_year }}</option>
+                        <option selected>{{ rel.sla_call.per_year }}</option>
                         {% for n in range(13) %}
-                        {% if n != call_sla.per_year %}
+                        {% if n != rel.sla_call.per_year %}
                         <option value="{{ n }}">{{ n }}</option>
                         {% endif %}
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col">
-                    {% if call_sla.per_year == 0 %}
+                    {% if rel.sla_call.per_year == 0 %}
                     <select name="call_month" class="form-select form-select-sm" disabled></select>
                     {% else %}
 
@@ -219,7 +219,7 @@
                     </select>
 
                     <script type="text/javascript">
-                        var callPerYear = {{ call_sla.per_year }}
+                        var callPerYear = {{ rel.sla_call.per_year }}
                         $(document).ready(function my() {
                             $('#multi-call').multiselect({
                                 onDropdownShow: function (event) {
