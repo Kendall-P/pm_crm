@@ -40,7 +40,7 @@ def init_db():
         populate_db()
         db.session.commit()
 
-    twelve_per_year = SLACall.query.filter_by(per_year=12)
+    twelve_per_year = SLACall.query.filter_by(per_year=12).first()
     if len(twelve_per_year.months) != 12:
         twelve_slas()
         db.session.commit()

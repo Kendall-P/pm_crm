@@ -1,8 +1,8 @@
-"""Initial migration.
+"""Initial migration
 
-Revision ID: 09b5a21acfd0
+Revision ID: 0dbae5936be3
 Revises: 
-Create Date: 2022-05-05 20:59:10.504077
+Create Date: 2022-05-22 18:58:52.396316
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '09b5a21acfd0'
+revision = '0dbae5936be3'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -98,7 +98,7 @@ def upgrade():
     op.create_table('update_account',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.String(length=5), nullable=False),
-    sa.Column('update_date', sa.DateTime(), nullable=False),
+    sa.Column('update_date', sa.Date(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -106,7 +106,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('relationship_id', sa.Integer(), nullable=False),
     sa.Column('who_updated', sa.String(length=5), nullable=False),
-    sa.Column('date_updated', sa.DateTime(), nullable=False),
+    sa.Column('date_updated', sa.Date(), nullable=False),
     sa.ForeignKeyConstraint(['relationship_id'], ['relationship.id'], ),
     sa.ForeignKeyConstraint(['who_updated'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -132,7 +132,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('relationship_id', sa.Integer(), nullable=False),
     sa.Column('who_updated', sa.String(length=5), nullable=False),
-    sa.Column('date_updated', sa.DateTime(), nullable=False),
+    sa.Column('date_updated', sa.Date(), nullable=False),
     sa.ForeignKeyConstraint(['relationship_id'], ['relationship.id'], ),
     sa.ForeignKeyConstraint(['who_updated'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')

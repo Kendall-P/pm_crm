@@ -3,6 +3,8 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db, login_manager
 
+LIMIT_CALL_MEETING = 5
+
 MONTHS = [
     "January",
     "February",
@@ -144,6 +146,7 @@ class Relationship(db.Model):
         return (
             Meeting.query.filter_by(relationship_id=self.id)
             .order_by(Meeting.date_updated.desc())
+            .limit(LIMIT_CALL_MEETING)
             .all()
         )
 
@@ -151,8 +154,31 @@ class Relationship(db.Model):
         return (
             Call.query.filter_by(relationship_id=self.id)
             .order_by(Call.date_updated.desc())
+            .limit(LIMIT_CALL_MEETING)
             .all()
         )
+
+    def load_last_meeting(self):
+        last_meeting = (
+            Meeting.query.filter_by(relationship_id=self.id)
+            .order_by(Meeting.date_updated.desc())
+            .first()
+        )
+        if last_meeting == None:
+            return ""
+        else:
+            return last_meeting
+
+    def load_last_call(self):
+        last_call = (
+            Call.query.filter_by(relationship_id=self.id)
+            .order_by(Call.date_updated.desc())
+            .first()
+        )
+        if last_call == None:
+            return ""
+        else:
+            return last_call
 
     def __repr__(self):
         return f"Relationship('{self.name}', {self.market_value})"
@@ -164,10 +190,10 @@ class Call(db.Model):
         db.Integer, db.ForeignKey("relationship.id"), nullable=False
     )
     who_updated = db.Column(db.String(5), db.ForeignKey("user.id"), nullable=False)
-    date_updated = db.Column(db.DateTime, nullable=False)
+    date_updated = db.Column(db.Date, nullable=False)
 
     def __repr__(self):
-        return f""
+        return f"{self.date_updated.strftime('%m.%d.%y')}"
 
 
 class Meeting(db.Model):
@@ -176,10 +202,10 @@ class Meeting(db.Model):
         db.Integer, db.ForeignKey("relationship.id"), nullable=False
     )
     who_updated = db.Column(db.String(5), db.ForeignKey("user.id"), nullable=False)
-    date_updated = db.Column(db.DateTime, nullable=False)
+    date_updated = db.Column(db.Date, nullable=False)
 
     def __repr__(self):
-        return f""
+        return f"{self.date_updated.strftime('%m.%d.%y')}"
 
 
 cmonths = db.Table(
@@ -297,7 +323,7 @@ class SMAAccount(db.Model):
 class UpdateAccount(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(5), db.ForeignKey("user.id"), nullable=False)
-    update_date = db.Column(db.DateTime, nullable=False)
+    update_date = db.Column(db.Date, nullable=False)
     lma_accounts = db.relationship("LMAAccount", backref="lma_update", lazy=True)
     sma_accounts = db.relationship("SMAAccount", backref="sma_update", lazy=True)
 

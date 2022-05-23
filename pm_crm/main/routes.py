@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from werkzeug.exceptions import BadRequestKeyError
 from pm_crm.models import Relationship, SLACall, cmonths, Call
 from pm_crm.utils import clear_flashes
-from pm_crm.CRUD import actions, create
+from pm_crm.main.CRUD import actions
 from datetime import date, datetime, timedelta
 from sqlalchemy import not_, and_
 
@@ -31,27 +31,11 @@ def main():
         relationships = current_user.load_relationships(filter="", sort="mv")
 
     if relationships:
-        # for relationship in relationships:
-        #     print(relationship.sla_call.per_year)
-        print(f"Month: {date.today().month}")
 
-        first_day = datetime.today().replace(day=1)
-        last_day = (
-            datetime.today().replace(day=1).replace(month=(date.today().month + 1))
-        ) - timedelta(days=1)
-        print(f"First: {first_day}  -  Last: {last_day}")
-
-        test = (
-            Relationship.query.filter_by(portfolio_manager=current_user.id)
-            .join(Call)
-            .filter(Call.date_updated <= first_day)
-            .join(SLACall)
-            .join(cmonths)
-            .filter(cmonths.c.call_month_id == 5)
-            .all()
-        )
-        if test:
-            print(test)
+        late_calls = actions.load_calls(late=True)
+        current_calls = actions.load_calls()
+        late_meetings = actions.load_meetings(late=True)
+        current_meetings = actions.load_meetings()
 
         # m_slas = {relationship.meeting_sla for relationship in relationships}
         # c_slas = {relationship.call_sla for relationship in relationships}
@@ -80,16 +64,20 @@ def main():
                 elif request.form["action"] == "update":
                     meetings = request.form.getlist("meeting")
                     calls = request.form.getlist("call")
-                    if meetings:
-                        create.new_meeting(meetings)
-                    if calls:
-                        create.new_call(calls)
+                    # if meetings:
+                    #     create.new_meeting(meetings)
+                    # if calls:
+                    #     create.new_call(calls)
         except BadRequestKeyError:
             pass
 
         return render_template(
             "main.html",
             relationships=relationships,
+            late_calls=late_calls,
+            current_calls=current_calls,
+            late_meetings=late_meetings,
+            current_meetings=current_meetings,
             # meet_peryear=meet_peryear,
             # call_peryear=call_peryear,
             # rels_meetings=rels_meetings,

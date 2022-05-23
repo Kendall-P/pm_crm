@@ -93,10 +93,11 @@ def get_pm_userid(df):
 
 
 def get_file_date(df):
-    file_date = datetime.combine(
-        datetime.strptime(df.loc[0, "valuation"], "%m/%d/%Y %H:%M").date(),
-        datetime.min.time(),
-    )
+    # file_date = datetime.combine(
+    #     datetime.strptime(df.loc[0, "valuation"], "%m/%d/%Y %H:%M").date(),
+    #     datetime.min.time(),
+    # )
+    file_date = datetime.strptime(df.loc[0, "valuation"], "%m/%d/%Y %H:%M").date()
     return file_date
 
 

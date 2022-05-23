@@ -7,17 +7,17 @@ def currencyFormat(value):
     return "${:,.2f}".format(value)
 
 
-@app.template_filter("latestDate")
-def latestDate(meetings):
-    dates = []
-    for i in range(len(meetings)):
-        dates.append(meetings[i].date_updated)
-    dates.sort(reverse=True)
+# @app.template_filter("latestDate")
+# def latestDate(meetings):
+#     dates = []
+#     for i in range(len(meetings)):
+#         dates.append(meetings[i].date_updated)
+#     dates.sort(reverse=True)
 
-    if dates:
-        return dates[0].strftime("%m.%d.%y")
-    else:
-        return ""
+#     if dates:
+#         return dates[0].strftime("%m.%d.%y")
+#     else:
+#         return ""
 
 
 @app.template_filter("formatDate")
