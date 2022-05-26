@@ -1,11 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, session, request
 from flask_login import login_required, current_user
 from werkzeug.exceptions import BadRequestKeyError
-from pm_crm.models import Relationship, SLACall, cmonths, Call
 from pm_crm.utils import clear_flashes
-from pm_crm.main.CRUD import actions
-from datetime import date, datetime, timedelta
-from sqlalchemy import not_, and_
+from pm_crm.models import db
+from pm_crm.main.CRUD import actions, create
 
 
 # Blueprint Configuration
@@ -37,21 +35,6 @@ def main():
         late_meetings = actions.load_meetings(late=True)
         current_meetings = actions.load_meetings()
 
-        # m_slas = {relationship.meeting_sla for relationship in relationships}
-        # c_slas = {relationship.call_sla for relationship in relationships}
-        # meeting_slas = actions.load_meeting_slas(m_slas)
-        # call_slas = actions.load_call_slas(c_slas)
-        # meet_peryear = {
-        #     meeting_sla.id: meeting_sla.per_year for meeting_sla in meeting_slas
-        # }
-        # call_peryear = {call_sla.id: call_sla.per_year for call_sla in call_slas}
-
-        # test = CallMonth.query.get(5)
-        # print(test.sla_calls)
-
-        # rels_meetings = actions.load_rels_with_meetings(meeting_slas)
-        # rels_calls = actions.load_rels_with_calls(call_slas)
-
         try:
             if request.method == "POST":
                 clear_flashes()
@@ -64,10 +47,12 @@ def main():
                 elif request.form["action"] == "update":
                     meetings = request.form.getlist("meeting")
                     calls = request.form.getlist("call")
-                    # if meetings:
-                    #     create.new_meeting(meetings)
-                    # if calls:
-                    #     create.new_call(calls)
+                    if meetings:
+                        create.new_meeting(meetings)
+                    if calls:
+                        create.new_call(calls)
+                    db.session.commit()
+                return redirect(url_for("main_bp.main"))
         except BadRequestKeyError:
             pass
 
@@ -78,10 +63,6 @@ def main():
             current_calls=current_calls,
             late_meetings=late_meetings,
             current_meetings=current_meetings,
-            # meet_peryear=meet_peryear,
-            # call_peryear=call_peryear,
-            # rels_meetings=rels_meetings,
-            # rels_calls=rels_calls,
         )
     return render_template(
         "main.html",
