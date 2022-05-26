@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required
-from pm_crm.CRUD import actions
 
 # Blueprint Configuration
 reports_bp = Blueprint(
@@ -9,5 +8,6 @@ reports_bp = Blueprint(
 
 
 @reports_bp.route("/reports")
+@login_required
 def reports():
     return render_template("reports.html")
